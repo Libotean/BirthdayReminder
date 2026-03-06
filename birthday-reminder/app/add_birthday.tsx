@@ -1,0 +1,104 @@
+import React, { use, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { Text, View, FlatList, TouchableOpacity, StyleSheet, TextInput, Image } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import * as ImagePicker from 'expo-image-picker';
+
+export default function AddBirthdayScreen() {
+    const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [data, setData] = useState(new Date());
+    const [showPicker, setShowPicker] = useState(false);
+    const [poza, setPoza] = useState<string | null>(null);
+    const router = useRouter();
+
+    const saveBirthday = () => {
+        router.push({
+                pathname: '/',
+                params: { name, poza }
+        });
+    };
+
+    const pickImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+        });
+
+        if (!result.canceled) {
+            setPoza(result.assets[0].uri);
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>Adauga zi de nastere</Text>
+
+            <TouchableOpacity onPress={pickImage}>
+                {poza ? <Image source={{ uri: poza }} style={styles.avatar} /> : <Image source={require('../assets/images/react-logo.png')} style={styles.avatar} />}
+            </TouchableOpacity>
+
+            <Text style={styles.elements}>Nume</Text>
+            <TextInput
+                placeholder="Pop Ion"
+                value={name}
+                onChangeText={setName}
+                style={styles.data}
+            />
+            <Text style={styles.elements}>
+                Telefon
+            </Text>
+            <TextInput
+                placeholder="07xx xxx xxx"
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+                style={styles.data}
+            />
+            <Text style={styles.elements}>
+                Data nasterii
+            </Text>
+            <TouchableOpacity onPress={() => setShowPicker(true)}>
+                <Text style={styles.data}>{data.toLocaleDateString('ro-RO')}</Text>
+            </TouchableOpacity>
+
+            {showPicker && (
+                <DateTimePicker
+                    value={data}
+                    mode="date"
+                    onChange={(_, dataAleasa) => {
+                    setShowPicker(false);
+                    if (dataAleasa) setData(dataAleasa);
+                    }}
+                />
+            )}
+
+            <TouchableOpacity style={styles.button} onPress={saveBirthday}>
+                <Text style={styles.buttonText}>Save</Text>
+            </TouchableOpacity>
+
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+  container: {flex: 1, paddingTop: 20, paddingHorizontal: 20, backgroundColor: '#fff'},
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, color: '#000' },
+  elements: { fontSize:18, fontWeight: 'bold', marginTop: 10 },
+  data: { backgroundColor: '#f0f0f0', padding: 10, borderRadius: 5, marginTop: 5 },
+  avatar: {borderRadius: 50, width: 100, height: 100, marginTop: 30, alignSelf: 'center'},
+  button: {
+    marginTop: 30,
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 5,
+    width: '35%'
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    alignSelf: 'center',
+    fontWeight: 'bold'
+  }
+});
