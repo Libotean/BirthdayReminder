@@ -1,7 +1,7 @@
 import React, { use, useEffect, useState, useCallback } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { Text, View, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { Birthday, getAll, remove, getInitials, getDaysUntilNextBirthday } from '@/database/birthdays';
+import { Text, View, FlatList, TouchableOpacity, StyleSheet, Image, SectionList } from 'react-native';
+import { Birthday, getAll, remove, getInitials, getDaysUntilNextBirthday, groupByMonth } from '@/database/birthdays';
 import  ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 export default function TabOneScreen() {
@@ -16,8 +16,13 @@ export default function TabOneScreen() {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/add_birthday')}>
+        <Text style={styles.buttonText}>+</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>Zile de nastere</Text>
-      <FlatList
+      <SectionList
+        sections = {groupByMonth(birthdays)}
+        keyExtractor={(item, index) => index.toString()}
         renderItem = {({ item }) => (
           <ReanimatedSwipeable
             renderRightActions={() => (
@@ -41,36 +46,34 @@ export default function TabOneScreen() {
             </View>
           </ReanimatedSwipeable>
         )}
+        renderSectionHeader={({ section: { title } }) => (
+          <Text style={styles.sectionHeader}>{title}</Text>
+        )}
         data={birthdays}
       />  
-      
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/add_birthday')}>
-        <Text style={styles.buttonText}>+</Text>
-      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, paddingTop: 50, paddingHorizontal: 20, backgroundColor: '#ffff'},
+  container: {flex: 1, paddingTop: '16%', paddingHorizontal: 20, backgroundColor: '#ffff', },
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, color: '#000'},
   item: { fontSize: 18, paddingVertical: 5, marginLeft: 15 },
   button: {
-    position: 'absolute',
-    bottom: 90,
-    right: 30,
-    backgroundColor: '#2196F3',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
+    position: 'relative', right: 0,
+    alignSelf: 'flex-end',
+    backgroundColor: '#1A1A1A',
+    width: 30, height: 30, borderRadius: 28,
+    justifyContent: 'center', alignItems: 'center',
+    shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15, shadowRadius: 12, elevation: 8,
   },
-  buttonText: { color: 'white', fontSize: 30 },
+  buttonText: { color: '#FFF', fontSize: 20, fontWeight: '300', lineHeight: 15 },
   deleteButton: {backgroundColor: 'red', justifyContent: 'flex-end', width: 100, height: 30, alignItems: 'center', alignSelf: 'center'},
   avatar: {borderRadius: 50, width: 50, height: 50,},
   avatarPlaceHolder: {borderRadius: 50, width: 50, height: 50, backgroundColor: '#ccc', justifyContent: 'center', alignItems: 'center'},
   initials: {color: '#555', fontSize: 20, fontWeight: 'bold'},
-  daysUntil: {color: '#555', fontSize: 14, paddingHorizontal: 10,}, 
+  daysUntil: {color: '#555', fontSize: 14, paddingHorizontal: 10,},
+  sectionHeader: { fontSize: 16, fontWeight: 'bold', color: '#999', paddingVertical: 8},
 
 });

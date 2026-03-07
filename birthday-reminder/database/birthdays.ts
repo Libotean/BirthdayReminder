@@ -54,4 +54,19 @@ export function getDaysUntilNextBirthday(birthdate: string) {
     }
 };
 
+export function groupByMonth(birthdays: Birthday[]) {
+    const months = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'];
+    const grouped: { [key: string]: Birthday[] } = {};
+
+    birthdays.forEach(b => {
+        const month = months[new Date(b.birthdate).getMonth()];
+        if (!grouped[month]) grouped[month] = [];
+        grouped[month].push(b);
+    });
+
+    return Object.keys(grouped).map(month => ({ 
+        title: month,
+        data: grouped[month]
+    }));
+};
 

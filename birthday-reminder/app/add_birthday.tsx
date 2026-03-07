@@ -87,7 +87,7 @@ export default function AddBirthdayScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, paddingTop: 20, paddingHorizontal: 20, backgroundColor: '#fff'},
+  container: {flex: 1, paddingTop: '16%', paddingHorizontal: 20, backgroundColor: '#fff'},
   title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, color: '#000' },
   elements: { fontSize:18, fontWeight: 'bold', marginTop: 10 },
   data: { backgroundColor: '#f0f0f0', padding: 10, borderRadius: 5, marginTop: 5 },
