@@ -1,36 +1,44 @@
-import React, { useState } from 'react';
-import { useRouter } from 'expo-router';
+import React, { use, useEffect, useState, useCallback } from 'react';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useLocalSearchParams } from 'expo-router';
 import { Text, View, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Birthday, getAll } from '@/database/birthdays';
 
 export default function TabOneScreen() {
-  const [birthdays, setBirthdays] = useState<string[]>([]);
+  const [birthdays, setBirthdays] = useState<Birthday[]>([]);
   const router = useRouter();
-  const { name, poza } = useLocalSearchParams();
+
+  useFocusEffect(
+    useCallback(() => {
+      setBirthdays(getAll());
+    }, [])
+  );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Zile de nastere</Text>
       <FlatList
+        renderItem = {({ item }) => (
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, }}>
+            {item.photo ? <Image source={{ uri: item.photo }} style={styles.avatar} /> : null}
+            <Text style={styles.item}>{item.name}</Text>
+          </View>
+        )}
         data={birthdays}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => <Text style={styles.item}>{item}</Text>}  
       />
       
       <TouchableOpacity style={styles.button} onPress={() => router.push('/add_birthday')}>
         <Text style={styles.buttonText}>+</Text>
       </TouchableOpacity>
-      <Text style={styles.item}>{name}</Text>
-      {poza ? <Image source={{ uri: poza as string}} style={styles.avatar} /> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, paddingTop: 50, paddingHorizontal: 20, backgroundColor: '#fff'},
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, color: '#000' },
-  item: { fontSize: 18, paddingVertical: 5 },
+  container: {flex: 1, paddingTop: 50, paddingHorizontal: 20, backgroundColor: '#ffff'},
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, color: '#000'},
+  item: { fontSize: 18, paddingVertical: 5, marginLeft: 15 },
   button: {
     position: 'absolute',
     bottom: 90,

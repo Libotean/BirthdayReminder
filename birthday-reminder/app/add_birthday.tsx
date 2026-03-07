@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { Text, View, FlatList, TouchableOpacity, StyleSheet, TextInput, Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
+import { insert } from '@/database/birthdays';
 
 export default function AddBirthdayScreen() {
     const [name, setName] = useState('');
@@ -13,10 +14,13 @@ export default function AddBirthdayScreen() {
     const router = useRouter();
 
     const saveBirthday = () => {
-        router.push({
-                pathname: '/',
-                params: { name, poza }
+        insert({
+            name,
+            phone,
+            photo: poza || '',
+            birthdate: data.toISOString()
         });
+        router.back();
     };
 
     const pickImage = async () => {
