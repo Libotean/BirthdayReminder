@@ -1,12 +1,12 @@
-import React, { use, useState } from 'react';
-import { useRouter } from 'expo-router';
+import React, { use, useState, useEffect } from 'react';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Text, View, FlatList, TouchableOpacity, StyleSheet, TextInput, Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
-import { insert } from '@/database/birthdays';
+import { update, getAll } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 
-export default function AddBirthdayScreen() {
+export default function EditBirthdayScreen() {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [data, setData] = useState(new Date());
@@ -14,8 +14,20 @@ export default function AddBirthdayScreen() {
     const [poza, setPoza] = useState<string | null>(null);
     const router = useRouter();
 
+    const { id } = useLocalSearchParams();
+
+    useEffect(() => {
+        const found = getAll().find(b => b.id === parseInt(id as string));
+        if (found) {
+            setName(found.name);
+            setPhone(found.phone);
+            setPoza(found.photo);
+            setData(new Date(found.birthdate));
+        }
+    }, []);
+
     const saveBirthday = () => {
-        insert({
+        update(parseInt(id as string), {
             name,
             phone,
             photo: poza || '',
@@ -38,10 +50,10 @@ export default function AddBirthdayScreen() {
 
     return (
         <View style={styles.container}>
-             <TouchableOpacity style={styles.buttonLeft} onPress={() => router.push('/')}>
+             <TouchableOpacity style={styles.buttonLeft} onPress={() => router.back()}>
                 <Text style={styles.buttonText}><IconSymbol size={16} name="chevron.left" color={'#ffff'}/></Text>
             </TouchableOpacity>
-            <Text style={styles.title}>Adauga zi de nastere</Text>
+            <Text style={styles.title}>Modifica ziua de nastere</Text>
 
             <TouchableOpacity onPress={pickImage}>
                 {poza ? <Image source={{ uri: poza }} style={styles.avatar} /> : <Image source={require('../assets/images/react-logo.png')} style={styles.avatar} />}

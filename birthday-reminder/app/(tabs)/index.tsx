@@ -34,30 +34,32 @@ export default function TabOneScreen() {
               </TouchableOpacity>
             )}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, }}>
-              {item.photo ? <Image source={{ uri: item.photo }} style={styles.avatar} /> : 
-                <View style={styles.avatarPlaceHolder}>
-                  <Text style={styles.initials}>{getInitials(item.name)}</Text>
-                </View>}
-              <Text style={styles.item}>{item.name}</Text>
-              <View>
-                <Text style={styles.daysUntil}>{getDaysUntilNextBirthday(item.birthdate)}</Text>
+            <TouchableOpacity onPress={() => router.push(`/info?id=${item.id}`)}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, minWidth: 70 }}>
+                {item.photo ? <Image source={{ uri: item.photo }} style={styles.avatar} /> : 
+                  <View style={styles.avatarPlaceHolder}>
+                    <Text style={styles.initials}>{getInitials(item.name)}</Text>
+                  </View>}
+                <Text style={[styles.item, { flex: 1 }]} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
+                <View>
+                  <Text style={styles.daysUntil}>{getDaysUntilNextBirthday(item.birthdate)}</Text>
+                </View>
               </View>
-            </View>
+            </TouchableOpacity>
+            
           </ReanimatedSwipeable>
         )}
         renderSectionHeader={({ section: { title } }) => (
           <Text style={styles.sectionHeader}>{title}</Text>
         )}
-        data={birthdays}
-      />  
+      /> 
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {flex: 1, paddingTop: '16%', paddingHorizontal: 20, backgroundColor: '#ffff', },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, color: '#000'},
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, color: '#000', borderBottomWidth: 1, borderBottomColor: '#E0E0E0', paddingBottom: 10 },
   item: { fontSize: 18, paddingVertical: 5, marginLeft: 15 },
   button: {
     position: 'relative', right: 0,

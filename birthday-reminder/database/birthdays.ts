@@ -54,6 +54,13 @@ export function getDaysUntilNextBirthday(birthdate: string) {
     }
 };
 
+export function getAge(birthdate: string) {
+    const year = new Date(birthdate).getFullYear();
+    const today = new Date();
+    const age = today.getFullYear() - year;
+    return age;
+};
+
 export function groupByMonth(birthdays: Birthday[]) {
     const months = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'];
     const grouped: { [key: string]: Birthday[] } = {};
