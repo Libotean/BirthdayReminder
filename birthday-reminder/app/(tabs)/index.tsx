@@ -1,9 +1,8 @@
 import React, { use, useEffect, useState, useCallback } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { useLocalSearchParams } from 'expo-router';
 import { Text, View, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { Birthday, getAll } from '@/database/birthdays';
+import { Birthday, getAll, remove } from '@/database/birthdays';
+import  ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 export default function TabOneScreen() {
   const [birthdays, setBirthdays] = useState<Birthday[]>([]);
@@ -20,13 +19,24 @@ export default function TabOneScreen() {
       <Text style={styles.title}>Zile de nastere</Text>
       <FlatList
         renderItem = {({ item }) => (
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, }}>
-            {item.photo ? <Image source={{ uri: item.photo }} style={styles.avatar} /> : null}
-            <Text style={styles.item}>{item.name}</Text>
-          </View>
+          <ReanimatedSwipeable
+            renderRightActions={() => (
+              <TouchableOpacity style={styles.deleteButton} onPress={() => {
+                remove(item.id!);
+                setBirthdays(getAll());
+              }}>
+                <Text style={{color:'white'}}>Sterge</Text>
+              </TouchableOpacity>
+            )}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, }}>
+              {item.photo ? <Image source={{ uri: item.photo }} style={styles.avatar} /> : null}
+              <Text style={styles.item}>{item.name}</Text>
+            </View>
+          </ReanimatedSwipeable>
         )}
         data={birthdays}
-      />
+      />  
       
       <TouchableOpacity style={styles.button} onPress={() => router.push('/add_birthday')}>
         <Text style={styles.buttonText}>+</Text>
@@ -51,6 +61,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: { color: 'white', fontSize: 30 },
+  deleteButton: {backgroundColor: 'red', justifyContent: 'flex-end', width: 100, height: 30, alignItems: 'center', alignSelf: 'center'},
   avatar: {borderRadius: 50, width: 50, height: 50,},
 
 });
