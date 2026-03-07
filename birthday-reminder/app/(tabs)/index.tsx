@@ -1,7 +1,7 @@
 import React, { use, useEffect, useState, useCallback } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Text, View, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { Birthday, getAll, remove } from '@/database/birthdays';
+import { Birthday, getAll, remove, getInitials } from '@/database/birthdays';
 import  ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 export default function TabOneScreen() {
@@ -30,7 +30,10 @@ export default function TabOneScreen() {
             )}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, }}>
-              {item.photo ? <Image source={{ uri: item.photo }} style={styles.avatar} /> : null}
+              {item.photo ? <Image source={{ uri: item.photo }} style={styles.avatar} /> : 
+                <View style={styles.avatarPlaceHolder}>
+                  <Text style={styles.initials}>{getInitials(item.name)}</Text>
+                </View>}
               <Text style={styles.item}>{item.name}</Text>
             </View>
           </ReanimatedSwipeable>
@@ -63,5 +66,7 @@ const styles = StyleSheet.create({
   buttonText: { color: 'white', fontSize: 30 },
   deleteButton: {backgroundColor: 'red', justifyContent: 'flex-end', width: 100, height: 30, alignItems: 'center', alignSelf: 'center'},
   avatar: {borderRadius: 50, width: 50, height: 50,},
+  avatarPlaceHolder: {borderRadius: 50, width: 50, height: 50, backgroundColor: '#ccc', justifyContent: 'center', alignItems: 'center'},
+  initials: {color: '#555', fontSize: 20, fontWeight: 'bold'}
 
 });
