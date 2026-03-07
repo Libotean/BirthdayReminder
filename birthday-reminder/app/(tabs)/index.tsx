@@ -1,7 +1,7 @@
 import React, { use, useEffect, useState, useCallback } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Text, View, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { Birthday, getAll, remove, getInitials } from '@/database/birthdays';
+import { Birthday, getAll, remove, getInitials, getDaysUntilNextBirthday } from '@/database/birthdays';
 import  ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 export default function TabOneScreen() {
@@ -35,6 +35,9 @@ export default function TabOneScreen() {
                   <Text style={styles.initials}>{getInitials(item.name)}</Text>
                 </View>}
               <Text style={styles.item}>{item.name}</Text>
+              <View>
+                <Text style={styles.daysUntil}>{getDaysUntilNextBirthday(item.birthdate)}</Text>
+              </View>
             </View>
           </ReanimatedSwipeable>
         )}
@@ -67,6 +70,7 @@ const styles = StyleSheet.create({
   deleteButton: {backgroundColor: 'red', justifyContent: 'flex-end', width: 100, height: 30, alignItems: 'center', alignSelf: 'center'},
   avatar: {borderRadius: 50, width: 50, height: 50,},
   avatarPlaceHolder: {borderRadius: 50, width: 50, height: 50, backgroundColor: '#ccc', justifyContent: 'center', alignItems: 'center'},
-  initials: {color: '#555', fontSize: 20, fontWeight: 'bold'}
+  initials: {color: '#555', fontSize: 20, fontWeight: 'bold'},
+  daysUntil: {color: '#555', fontSize: 14, paddingHorizontal: 10,}, 
 
 });

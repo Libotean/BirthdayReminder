@@ -9,8 +9,12 @@ export type Birthday = {
 }; 
 
 export function getAll(): Birthday[] {
-    const result = db.getAllSync('SELECT * FROM birthdays');
-    return result as Birthday[];
+    const result = db.getAllSync('SELECT * FROM birthdays') as Birthday[];
+    return result.sort((a, b) => {
+        const daysA = parseInt(getDaysUntilNextBirthday(a.birthdate)) || 0;
+        const daysB = parseInt(getDaysUntilNextBirthday(b.birthdate)) || 0;
+        return daysA - daysB;
+    });
 };
 
 export function insert(birthday: Birthday) {
@@ -30,4 +34,24 @@ export function update(id: number, birthday: Birthday) {
 export function getInitials(name: string) {
     const names = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
     return names;
-}
+};
+
+export function getDaysUntilNextBirthday(birthdate: string) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const bday = new Date(birthdate);
+    const next = new Date(today.getFullYear(), bday.getMonth(), bday.getDate());
+    if (next < today) next.setFullYear(today.getFullYear() + 1);
+    const diff = Math.ceil((next.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    if (diff === 0) {
+        return 'Azi!';
+    }
+    else if (diff === 1) {
+        return `${diff} zi`;
+    }
+    else {
+        return `${diff} zile`;
+    }
+};
+
+
