@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import React, { useState, useCallback } from 'react';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { Text, View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getAll, Birthday, getInitials, getAge, getDaysUntilNextBirthday } from '@/database/birthdays';
@@ -9,10 +9,12 @@ export default function BirthdayInfoScreen() {
     const [ person, setPerson ] = useState<Birthday | null>(null);
     const router = useRouter();
 
-    useEffect(() => {
-        const found = getAll().find(b => b.id === parseInt(id as string));
-        if (found) setPerson(found);
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            const found = getAll().find(b => b.id === parseInt(id as string));
+            if (found) setPerson(found);
+        }, [])
+    );
 
     if (!person) return <Text>"Se incarca..."</Text>;
 

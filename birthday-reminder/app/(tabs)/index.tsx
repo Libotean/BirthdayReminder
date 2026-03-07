@@ -2,6 +2,7 @@ import React, { use, useEffect, useState, useCallback } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Text, View, FlatList, TouchableOpacity, StyleSheet, Image, SectionList } from 'react-native';
 import { Birthday, getAll, remove, getInitials, getDaysUntilNextBirthday, groupByMonth } from '@/database/birthdays';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import  ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 export default function TabOneScreen() {
@@ -30,7 +31,7 @@ export default function TabOneScreen() {
                 remove(item.id!);
                 setBirthdays(getAll());
               }}>
-                <Text style={{color:'white'}}>Sterge</Text>
+                <Text style={{color:'white'}}><IconSymbol size={16} name="trash" color={'#ffff'}/></Text>
               </TouchableOpacity>
             )}
           >
@@ -71,7 +72,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15, shadowRadius: 12, elevation: 8,
   },
   buttonText: { color: '#FFF', fontSize: 20, fontWeight: '300', lineHeight: 15 },
-  deleteButton: {backgroundColor: 'red', justifyContent: 'flex-end', width: 100, height: 30, alignItems: 'center', alignSelf: 'center'},
+  deleteButton: {
+    backgroundColor: 'red', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    width: 50,
+    marginBottom: 10,
+    borderRadius: 25,
+    marginLeft: 8,
+  },
   avatar: {borderRadius: 50, width: 50, height: 50,},
   avatarPlaceHolder: {borderRadius: 50, width: 50, height: 50, backgroundColor: '#ccc', justifyContent: 'center', alignItems: 'center'},
   initials: {color: '#555', fontSize: 20, fontWeight: 'bold'},

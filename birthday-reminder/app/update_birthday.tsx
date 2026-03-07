@@ -53,9 +53,7 @@ export default function EditBirthdayScreen() {
              <TouchableOpacity style={styles.buttonLeft} onPress={() => router.back()}>
                 <Text style={styles.buttonText}><IconSymbol size={16} name="chevron.left" color={'#ffff'}/></Text>
             </TouchableOpacity>
-            <Text style={styles.title}>Modifica ziua de nastere</Text>
-
-            <TouchableOpacity onPress={pickImage}>
+            <TouchableOpacity onPress={pickImage} style={{ alignSelf: 'center' }}>
                 {poza ? <Image source={{ uri: poza }} style={styles.avatar} /> : <Image source={require('../assets/images/react-logo.png')} style={styles.avatar} />}
             </TouchableOpacity>
 
@@ -103,7 +101,7 @@ export default function EditBirthdayScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {flex: 1, paddingTop: '35%', paddingHorizontal: 20, backgroundColor: '#fff'},
+    container: {flex: 1, paddingTop: '30%', paddingHorizontal: 20, backgroundColor: '#fff'},
     title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, color: '#000' },
     elements: { fontSize:18, fontWeight: 'bold', marginTop: 10 },
     data: { backgroundColor: '#f0f0f0', padding: 10, borderRadius: 5, marginTop: 5 },
