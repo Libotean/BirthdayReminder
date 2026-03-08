@@ -5,6 +5,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { insert } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import DatePickerModal from '@/components/DatePickerModal';
 
 const NAME_REGEX = /^[a-zA-ZăâîșțĂÂÎȘȚ\s\-]+$/;
 const PHONE_REGEX = /^07\d{2}\s?\d{3}\s?\d{3}$/;
@@ -94,6 +95,7 @@ export default function AddBirthdayScreen() {
             <Text style={styles.elements}>Nume</Text>
             <TextInput
                 placeholder="Pop Ion"
+                placeholderTextColor="#bbbaba"
                 value={name}
                 onChangeText={(v) => { setName(v); validateName(v); }}
                 style={[styles.data, nameError ? styles.inputError : null]}
@@ -104,6 +106,7 @@ export default function AddBirthdayScreen() {
             </Text>
             <TextInput
                 placeholder="07xx xxx xxx"
+                placeholderTextColor="#bbbaba"
                 value={phone}
                 onChangeText={(v) => { setPhone(v); validatePhone(v); }}
                 keyboardType="phone-pad"
@@ -118,14 +121,10 @@ export default function AddBirthdayScreen() {
             </TouchableOpacity>
             {dateError ? <Text style={styles.errorText}>{dateError}</Text> : null}
             {showPicker && (
-                <DateTimePicker
+                <DatePickerModal
                     value={data}
-                    mode="date"
-                    maximumDate={new Date()}
-                    onChange={(_, dataAleasa) => {
-                    setShowPicker(false);
-                    if (dataAleasa) {setData(dataAleasa); setDateError('');}
-                    }}
+                    onChange={(d) => setData(d)}
+                    onClose={() => setShowPicker(false)}
                 />
             )}
 
