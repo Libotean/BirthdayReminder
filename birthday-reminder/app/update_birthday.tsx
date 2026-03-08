@@ -5,6 +5,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { update, getAll } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import DatePickerModal from '@/components/DatePickerModal';
 
 export default function EditBirthdayScreen() {
     const [name, setName] = useState('');
@@ -82,16 +83,12 @@ export default function EditBirthdayScreen() {
             </TouchableOpacity>
 
             {showPicker && (
-                <DateTimePicker
+                <DatePickerModal
                     value={data}
-                    mode="date"
-                    onChange={(_, dataAleasa) => {
-                    setShowPicker(false);
-                    if (dataAleasa) setData(dataAleasa);
-                    }}
+                    onChange={(d) => setData(d)}
+                    onClose={() => setShowPicker(false)}
                 />
             )}
-
             <TouchableOpacity style={styles.button} onPress={saveBirthday}>
                 <Text style={styles.buttonText}>Save</Text>
             </TouchableOpacity>
