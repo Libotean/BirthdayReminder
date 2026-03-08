@@ -21,6 +21,7 @@ const MAPPING = {
   'chevron.left': 'chevron-left',
   'pencil': 'edit',
   'trash': 'delete',
+  'camera': 'photo-camera',
 } as IconMapping;
 
 /**
