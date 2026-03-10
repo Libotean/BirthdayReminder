@@ -94,11 +94,12 @@ export default function SettingsScreen() {
 
     updateSettings({
       reminderOnDay,
-      reminderDaysBefore: reminderDaysBeforeEnable === 1 ? reminderDaysBefore : 0,
+      reminderDaysBefore:
+        reminderDaysBeforeEnable === 1 ? reminderDaysBefore : 0,
       reminderHour,
       reminderMinutes,
     });
-    // router.back();
+    router.back();
   };
 
   return (
@@ -185,38 +186,40 @@ export default function SettingsScreen() {
                 <TextInput
                   value={String(reminderHour)}
                   onChangeText={(v) => {
-                    (setReminderHour(Number(v)), setHourError(validateHour(v)));
+                    setReminderHour(Number(v));
+                    setHourError(validateHour(v));
                   }}
                   keyboardType="numeric"
                   maxLength={2}
                   style={styles.settingInput}
                 />
-                {hourError ? (
-                  <Text style={[styles.errorText, { fontFamily: PIXEL }]}>
-                    {hourError}
-                  </Text>
-                ) : null}
                 <Text style={[styles.timeSeparator, { fontFamily: PIXEL }]}>
                   :
                 </Text>
                 <TextInput
                   value={String(reminderMinutes)}
                   onChangeText={(v) => {
-                    (setReminderMinutes(Number(v)),
-                      setMinutesError(validateHour(v)));
+                    setReminderMinutes(Number(v));
+                    setMinutesError(validateMinutes(v));
                   }}
                   keyboardType="numeric"
                   maxLength={2}
                   style={styles.settingInput}
                 />
-                {minutesError ? (
-                  <Text style={[styles.errorText, { fontFamily: PIXEL }]}>
-                    {hourError}
-                  </Text>
-                ) : null}
               </View>
             </View>
+            {hourError ? (
+              <Text style={[styles.errorText, { fontFamily: PIXEL }]}>
+                {hourError}
+              </Text>
+            ) : null}
+            {minutesError ? (
+              <Text style={[styles.errorText, { fontFamily: PIXEL }]}>
+                {minutesError}
+              </Text>
+            ) : null}
           </View>
+
           <TouchableOpacity style={styles.saveButton} onPress={saveSettings}>
             <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>
               salveaza
@@ -233,7 +236,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F7F7F5",
   },
-
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -252,7 +254,6 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 6,
   },
-
   header: {
     marginBottom: 22,
     marginTop: 10,
@@ -269,7 +270,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     lineHeight: 28,
   },
-
   formCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 20,
@@ -328,7 +328,6 @@ const styles = StyleSheet.create({
     color: "#111",
     marginBottom: 2,
   },
-
   saveButton: {
     backgroundColor: "#111111",
     borderRadius: 16,
@@ -348,7 +347,9 @@ const styles = StyleSheet.create({
   errorText: {
     fontSize: 6,
     color: "#FF3B30",
-    marginTop: 5,
+    marginTop: 4,
+    marginBottom: 6,
+    paddingHorizontal: 10,
     letterSpacing: 1,
   },
 });
