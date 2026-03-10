@@ -1,13 +1,45 @@
 import React, { useState, useCallback } from 'react';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
-import { Text, View, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
+import Svg, { Rect } from 'react-native-svg';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useFonts } from 'expo-font';
+import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getAll, Birthday, getInitials, getAge, getDaysUntilNextBirthday } from '@/database/birthdays';
+import { useMemo } from 'react';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const STAR_COLORS = ['#ffbe0b', '#fb5607', '#ff006e', '#8338ec', '#3a86ff'];
+
+function useStars(count: number, areaWidth: number, areaHeight: number) {
+    return useMemo(() => Array.from({ length: count }, () => ({
+        x: Math.random() * areaWidth,
+        y: Math.random() * areaHeight,
+        size: Math.random() < 0.5 ? 3 : 5,
+        color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
+        opacity: 0.25 + Math.random() * 0.35,
+    })), [count, areaWidth, areaHeight]);
+}
+
+function PixelStars({ areaHeight }: { areaHeight: number }) {
+    const stars = useStars(30, SCREEN_WIDTH, areaHeight);
+    return (
+        <View style={[StyleSheet.absoluteFillObject, { pointerEvents: 'none' }]}>
+            <Svg width={SCREEN_WIDTH} height={areaHeight}>
+                {stars.map((s, i) => (
+                    <Rect key={i} x={s.x} y={s.y} width={s.size} height={s.size} fill={s.color} opacity={s.opacity} />
+                ))}
+            </Svg>
+        </View>
+    );
+}
 
 export default function BirthdayInfoScreen() {
     const { id } = useLocalSearchParams();
-    const [ person, setPerson ] = useState<Birthday | null>(null);
+    const [person, setPerson] = useState<Birthday | null>(null);
     const router = useRouter();
+    const [fontsLoaded] = useFonts({ PressStart2P_400Regular });
 
     useFocusEffect(
         useCallback(() => {
@@ -16,60 +48,272 @@ export default function BirthdayInfoScreen() {
         }, [])
     );
 
-    if (!person) return <Text>"Se incarca..."</Text>;
+    if (!fontsLoaded || !person) return null;
 
-    return(
+    const PIXEL = 'PressStart2P_400Regular';
+    const isToday = getDaysUntilNextBirthday(person.birthdate) === 'Azi!';
+    const daysText = getDaysUntilNextBirthday(person.birthdate);
+
+    return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.buttonLeft} onPress={() => router.push('/')}>
-                <Text style={styles.buttonText}><IconSymbol size={16} name="chevron.left" color={'#ffff'}/></Text>
+
+            {/* Pixel stars */}
+            <PixelStars areaHeight={320} />
+
+            {/* Back button */}
+            <TouchableOpacity style={styles.btnLeft} onPress={() => router.push('/')}>
+                <IconSymbol size={16} name="chevron.left" color={'#fff'} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonRight} onPress={() => router.push(`/update_birthday?id=${person.id}`)}>
-                <Text style={styles.buttonText}><IconSymbol size={16} name="pencil" color={'#ffff'}/></Text>
+
+            {/* Edit button */}
+            <TouchableOpacity style={styles.btnRight} onPress={() => router.push(`/update_birthday?id=${person.id}`)}>
+                <IconSymbol size={16} name="pencil" color={'#fff'} />
             </TouchableOpacity>
-            {person?.photo ? <Image source={{ uri: person?.photo }} style={styles.avatar} /> : 
-                <View style={styles.avatarPlaceHolder}>
-                    <Text style={styles.initials}>{getInitials(person?.name || '')}</Text>
-                </View>}
-            <Text style={styles.title}>{person?.name}</Text>
-            <Text style={styles.dateText}>{new Date(person?.birthdate || '').toLocaleDateString()}</Text>
-            <Text style={styles.divider}></Text>
-            <Text style={styles.ageText}>{getAge(person?.birthdate || '')} de ani in</Text>
-            <Text style={styles.remained}>{getDaysUntilNextBirthday(person?.birthdate || '')}</Text>
+
+            {/* Avatar */}
+            <View style={styles.avatarWrapper}>
+                {isToday ? (
+                    <LinearGradient
+                        colors={['#FFBE0B', '#FB5607', '#FF006E', '#8338EC', '#3A86FF']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={styles.avatarGradientRing}
+                    >
+                        {person.photo
+                            ? <Image source={{ uri: person.photo }} style={styles.avatar} />
+                            : <View style={[styles.avatarPlaceholder, { backgroundColor: '#2A2A2A' }]}>
+                                <Text style={[styles.initials, { fontFamily: PIXEL, color: '#fff' }]}>
+                                    {getInitials(person.name)}
+                                </Text>
+                              </View>
+                        }
+                    </LinearGradient>
+                ) : (
+                    person.photo
+                        ? <Image source={{ uri: person.photo }} style={[styles.avatar, styles.avatarBorder]} />
+                        : <View style={styles.avatarPlaceholder}>
+                            <Text style={[styles.initials, { fontFamily: PIXEL }]}>
+                                {getInitials(person.name)}
+                            </Text>
+                          </View>
+                )}
+            </View>
+
+            {/* Name */}
+            <Text style={[styles.name, { fontFamily: PIXEL }]}>{person.name}</Text>
+
+            {/* Date */}
+            <Text style={[styles.dateText, { fontFamily: PIXEL }]}>
+                {new Date(person.birthdate).toLocaleDateString('ro-RO')}
+            </Text>
+
+            {/* Divider */}
+            <View style={styles.divider} />
+
+            {/* Stats row */}
+            <View style={styles.statsRow}>
+
+                {/* Age card */}
+                <View style={styles.statCard}>
+                    <Text style={[styles.statValue, { fontFamily: PIXEL }]}>
+                        {getAge(person.birthdate)}
+                    </Text>
+                    <Text style={[styles.statLabel, { fontFamily: PIXEL }]}>ani</Text>
+                </View>
+
+                {/* Days card — gradient if today */}
+                {isToday ? (
+                    <LinearGradient
+                        colors={['#FFBE0B', '#FB5607', '#FF006E', '#8338EC', '#3A86FF']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.statCardGradientWrap}
+                    >
+                        <View style={[styles.statCard, styles.statCardTodayInner]}>
+                            <Text style={[styles.statValue, { fontFamily: PIXEL, color: '#fff' }]}>
+                                Azi!
+                            </Text>
+                        </View>
+                    </LinearGradient>
+                ) : (
+                    <View style={[styles.statCard, styles.statCardDark]}>
+                        <Text style={[styles.statValue, { fontFamily: PIXEL, color: '#fff' }]}>
+                            {daysText}
+                        </Text>
+                        <Text style={[styles.statLabel, { fontFamily: PIXEL, color: '#888' }]}>
+                            ramase
+                        </Text>
+                    </View>
+                )}
+
+            </View>
+
+            
+
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {flex: 1, paddingTop: '25%', paddingHorizontal: 20, backgroundColor: '#ffff', },
-    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 0, color: '#000', paddingBottom: 10, alignSelf: 'center' },
-    avatar: {borderRadius: 50, width: 100, height: 100, alignSelf: 'center', marginBottom: 20, marginTop: '15%'},
-    avatarPlaceHolder: {borderRadius: 50, width: 100, height: 100, backgroundColor: '#ccc', justifyContent: 'center', alignSelf: 'center'},
-    initials: {color: '#555', fontSize: 40, fontWeight: 'bold', alignSelf: 'center'},
-    elements: { fontSize:14, marginTop: -10, alignSelf: 'center', marginBottom: 10 },
-    buttonRight: {
-        display: 'flex',
-        position: 'absolute', right: 10, top: '10%',
-        alignSelf: 'flex-end',
-        backgroundColor: '#1A1A1A',
-        width: 40, height: 40, borderRadius: 28,
-        justifyContent: 'center', alignItems: 'center',
-        shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15, shadowRadius: 12, elevation: 8,
+    container: {
+        flex: 1,
+        backgroundColor: '#F7F7F5',
+        paddingHorizontal: 24,
+        paddingTop: '14%',
     },
-    buttonLeft: {
-        display: 'flex',
-        position: 'absolute', left: 10, top: '10%',
-        alignSelf: 'flex-start',
-        backgroundColor: '#1A1A1A',
-        width: 40, height: 40, borderRadius: 28,
-        justifyContent: 'center', alignItems: 'center',
-        shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15, shadowRadius: 12, elevation: 8,
+
+    // ── Nav buttons ──
+    btnLeft: {
+        position: 'absolute',
+        left: 20,
+        top: '7%',
+        width: 42,
+        height: 42,
+        borderRadius: 14,
+        backgroundColor: '#111',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 10,
+        elevation: 6,
     },
-    buttonText: { color: '#FFF', fontSize: 20, fontWeight: '300', lineHeight: 15 },
-    remained: {fontSize: 22, backgroundColor: '#E0E0E0', borderRadius: 40, padding: 13, alignSelf: 'center', fontWeight: 'bold'},
-    divider: { width: '80%', height: 1, backgroundColor: '#E0E0E0', alignSelf: 'center', marginVertical: 20 },
-    dateText: { fontSize: 16, color: '#999', alignSelf: 'center', marginBottom: 6 },
-    ageText: { fontSize: 16, color: '#555', fontWeight: 'bold', letterSpacing: 1, alignSelf: 'center', marginBottom: 15 },
-    daysContainer: { alignSelf: 'center', alignItems: 'center', marginTop: 10 },
+    btnRight: {
+        position: 'absolute',
+        right: 20,
+        top: '7%',
+        width: 42,
+        height: 42,
+        borderRadius: 14,
+        backgroundColor: '#111',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 10,
+        elevation: 6,
+    },
+
+    // ── Avatar ──
+    avatarWrapper: {
+        alignSelf: 'center',
+        marginTop: '18%',
+        marginBottom: 20,
+    },
+    avatarGradientRing: {
+        borderRadius: 30,
+        padding: 3,
+        overflow: 'hidden',
+    },
+    avatarBorder: {
+        borderWidth: 3,
+        borderColor: '#E5E5E5',
+        borderRadius: 30,
+    },
+    avatar: {
+        width: 100,
+        height: 100,
+        borderRadius: 28,
+    },
+    avatarPlaceholder: {
+        width: 100,
+        height: 100,
+        borderRadius: 28,
+        backgroundColor: '#EBEBEB',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    initials: {
+        fontSize: 22,
+        color: '#555',
+    },
+
+    // ── Name & date ──
+    name: {
+        fontSize: 16,
+        color: '#111',
+        alignSelf: 'center',
+        letterSpacing: 1,
+        marginBottom: 10,
+        lineHeight: 24,
+    },
+    dateText: {
+        fontSize: 8,
+        color: '#AAAAAA',
+        alignSelf: 'center',
+        letterSpacing: 2,
+    },
+
+    // ── Divider ──
+    divider: {
+        height: 1,
+        backgroundColor: '#E5E5E5',
+        marginVertical: 28,
+        marginHorizontal: 10,
+    },
+
+    // ── Stats ──
+    statsRow: {
+        flexDirection: 'row',
+        gap: 12,
+        justifyContent: 'center',
+    },
+    statCard: {
+        flex: 1,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        paddingVertical: 22,
+        alignItems: 'center',
+        gap: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 2,
+    },
+    statCardDark: {
+        backgroundColor: '#111111',
+    },
+    statCardGradientWrap: {
+        flex: 1,
+        borderRadius: 22,
+        padding: 3,
+        overflow: 'hidden',
+    },
+    statCardTodayInner: {
+        backgroundColor: '#111',
+        borderRadius: 18,
+        flex: 1,
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    statValue: {
+        fontSize: 10,
+        color: '#111',
+        letterSpacing: 1,
+    },
+    statLabel: {
+        fontSize: 7,
+        color: '#AAAAAA',
+        letterSpacing: 2,
+    },
+
+    // ── Today banner ──
+    todayBanner: {
+        marginTop: 20,
+        backgroundColor: '#111',
+        borderRadius: 16,
+        paddingVertical: 14,
+        paddingHorizontal: 20,
+        alignItems: 'center',
+    },
+    todayBannerText: {
+        fontSize: 10,
+        color: '#fff',
+        letterSpacing: 1,
+        lineHeight: 18,
+    },
 });
