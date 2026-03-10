@@ -17,4 +17,16 @@ export function updateSettings(settings: Settings){
         settings.reminderOnDay, settings.reminderDaysBefore, settings.reminderHour, settings.reminderMinutes);
 }
 
- 
+export function validateHour(value: string): string {
+    const num = Number(value);
+    if (isNaN(num)) return 'doar numere';
+    if (num < 0 || num > 23) return 'ora: 0-23';
+    return '';
+}
+
+export function validateMinutes(value: string): string {
+    const num = Number(value);
+    if (isNaN(num)) return 'doar numere';
+    if (num < 0 || num > 59) return '0-59';
+    return '';
+}

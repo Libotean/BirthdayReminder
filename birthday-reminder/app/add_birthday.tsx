@@ -5,15 +5,13 @@ import Svg, { Rect } from 'react-native-svg';
 import { useFonts } from 'expo-font';
 import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import * as ImagePicker from 'expo-image-picker';
-import { insert } from '@/database/birthdays';
+import { insert, validateName, validatePhone } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useMemo } from 'react';
 import DatePickerModal from '@/components/DatePickerModal';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const STAR_COLORS = ['#ffbe0b', '#fb5607', '#ff006e', '#8338ec', '#3a86ff'];
-const NAME_REGEX = /^[a-zA-ZăâîșțĂÂÎȘȚ\s\-]+$/;
-const PHONE_REGEX = /^07\d{2}\s?\d{3}\s?\d{3}$/;
 
 function useStars(count: number, areaWidth: number, areaHeight: number) {
     return useMemo(() => Array.from({ length: count }, () => ({
@@ -53,20 +51,9 @@ export default function AddBirthdayScreen() {
     if (!fontsLoaded) return null;
     const PIXEL = 'PressStart2P_400Regular';
 
-    const validateName = (value: string) => {
-        if (!value.trim()) setNameError('Numele este obligatoriu.');
-        else if (!NAME_REGEX.test(value.trim())) setNameError('Doar litere, spatii si cratime.');
-        else setNameError('');
-    };
-
-    const validatePhone = (value: string) => {
-        if (!PHONE_REGEX.test(value.trim())) setPhoneError('Format invalid. Ex: 07xx xxx xxx');
-        else setPhoneError('');
-    };
-
     const saveBirthday = () => {
-        validateName(name);
-        validatePhone(phone);
+        const nErr = validateName(name);
+        const pErr = validatePhone(phone);
         const today = new Date();
         if (data >= today) {
             setDateError('Data nu poate fi in viitor.');
@@ -74,8 +61,7 @@ export default function AddBirthdayScreen() {
         } else {
             setDateError('');
         }
-        if (!NAME_REGEX.test(name.trim()) || !name.trim()) return;
-        if (!PHONE_REGEX.test(phone.trim()) || !phone.trim()) return;
+        if (nErr || pErr) return;
         insert({ name, phone, photo: poza || '', birthdate: data.toISOString() });
         router.back();
     };
@@ -93,18 +79,15 @@ export default function AddBirthdayScreen() {
         <View style={styles.container}>
             <PixelStars areaHeight={280} />
 
-            {/* Back button */}
             <TouchableOpacity style={styles.btnLeft} onPress={() => router.push('/')}>
                 <IconSymbol size={16} name="chevron.left" color={'#fff'} />
             </TouchableOpacity>
 
-            {/* Header */}
             <View style={styles.header}>
                 <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>adauga zi de</Text>
                 <Text style={[styles.title, { fontFamily: PIXEL }]}>nastere</Text>
             </View>
 
-            {/* Avatar picker */}
             <TouchableOpacity onPress={pickImage} style={styles.avatarWrapper}>
                 {poza
                     ? <Image source={{ uri: poza }} style={styles.avatar} />
@@ -115,33 +98,29 @@ export default function AddBirthdayScreen() {
                 }
             </TouchableOpacity>
 
-            {/* Form card */}
             <View style={styles.formCard}>
 
-                {/* Name */}
                 <Text style={[styles.label, { fontFamily: PIXEL }]}>nume</Text>
                 <TextInput
                     placeholder="Pop Ion"
                     placeholderTextColor="#BBBBBB"
                     value={name}
-                    onChangeText={(v) => { setName(v); validateName(v); }}
+                    onChangeText={(v) => { setName(v); setNameError(validateName(v)); }}
                     style={[styles.input, nameError ? styles.inputError : null, { fontFamily: PIXEL }]}
                 />
                 {nameError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{nameError}</Text> : null}
 
-                {/* Phone */}
                 <Text style={[styles.label, { fontFamily: PIXEL }]}>telefon</Text>
                 <TextInput
                     placeholder="07xx xxx xxx"
                     placeholderTextColor="#BBBBBB"
                     value={phone}
-                    onChangeText={(v) => { setPhone(v); validatePhone(v); }}
+                    onChangeText={(v) => { setPhone(v); setPhoneError(validatePhone(v)); }}
                     keyboardType="phone-pad"
                     style={[styles.input, phoneError ? styles.inputError : null, { fontFamily: PIXEL }]}
                 />
                 {phoneError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{phoneError}</Text> : null}
 
-                {/* Date */}
                 <Text style={[styles.label, { fontFamily: PIXEL }]}>data nasterii</Text>
                 <TouchableOpacity onPress={() => setShowPicker(true)}>
                     <View style={[styles.input, styles.dateInput, dateError ? styles.inputError : null]}>
@@ -155,7 +134,6 @@ export default function AddBirthdayScreen() {
 
             </View>
 
-            {/* Date picker modal */}
             {showPicker && (
                 <DatePickerModal
                     value={data}
@@ -164,7 +142,6 @@ export default function AddBirthdayScreen() {
                 />
             )}
 
-            {/* Save button */}
             <TouchableOpacity style={styles.saveButton} onPress={saveBirthday}>
                 <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>salveaza</Text>
             </TouchableOpacity>
