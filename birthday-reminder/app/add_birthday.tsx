@@ -1,14 +1,43 @@
-import React, { use, useState } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
-import { Text, View, TouchableOpacity, StyleSheet, TextInput, Image } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions } from 'react-native';
+import Svg, { Rect } from 'react-native-svg';
+import { useFonts } from 'expo-font';
+import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { insert } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useMemo } from 'react';
 import DatePickerModal from '@/components/DatePickerModal';
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const STAR_COLORS = ['#ffbe0b', '#fb5607', '#ff006e', '#8338ec', '#3a86ff'];
 const NAME_REGEX = /^[a-zA-ZăâîșțĂÂÎȘȚ\s\-]+$/;
 const PHONE_REGEX = /^07\d{2}\s?\d{3}\s?\d{3}$/;
+
+function useStars(count: number, areaWidth: number, areaHeight: number) {
+    return useMemo(() => Array.from({ length: count }, () => ({
+        x: Math.random() * areaWidth,
+        y: Math.random() * areaHeight,
+        size: Math.random() < 0.5 ? 3 : 5,
+        color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
+        opacity: 0.25 + Math.random() * 0.35,
+    })), [count, areaWidth, areaHeight]);
+}
+
+function PixelStars({ areaHeight }: { areaHeight: number }) {
+    const stars = useStars(25, SCREEN_WIDTH, areaHeight);
+    return (
+        <View style={[StyleSheet.absoluteFillObject, { pointerEvents: 'none' }]}>
+            <Svg width={SCREEN_WIDTH} height={areaHeight}>
+                {stars.map((s, i) => (
+                    <Rect key={i} x={s.x} y={s.y} width={s.size} height={s.size} fill={s.color} opacity={s.opacity} />
+                ))}
+            </Svg>
+        </View>
+    );
+}
 
 export default function AddBirthdayScreen() {
     const [name, setName] = useState('');
@@ -21,50 +50,34 @@ export default function AddBirthdayScreen() {
     const [dateError, setDateError] = useState('');
     const router = useRouter();
 
+    const [fontsLoaded] = useFonts({ PressStart2P_400Regular });
+    if (!fontsLoaded) return null;
+    const PIXEL = 'PressStart2P_400Regular';
+
     const validateName = (value: string) => {
-        if (!value.trim()) {
-            setNameError('Numele este obligatoriu.');
-        }
-        else if (!NAME_REGEX.test(value.trim())) {
-            setNameError('Numele poate contine doar litere, spatii si cratime.');
-        }
-        else {
-            setNameError('');
-        }
+        if (!value.trim()) setNameError('Numele este obligatoriu.');
+        else if (!NAME_REGEX.test(value.trim())) setNameError('Doar litere, spatii si cratime.');
+        else setNameError('');
     };
 
     const validatePhone = (value: string) => {
-        if (!PHONE_REGEX.test(value.trim())) {
-            setPhoneError('Format invalid. Ex: 07xx xxx xxx');
-        }
-        else {
-            setPhoneError('');
-        }
+        if (!PHONE_REGEX.test(value.trim())) setPhoneError('Format invalid. Ex: 07xx xxx xxx');
+        else setPhoneError('');
     };
 
     const saveBirthday = () => {
         validateName(name);
         validatePhone(phone);
-
         const today = new Date();
-        // today.setHours(0, 0, 0, 0);
         if (data >= today) {
-            setDateError('Data nasterii nu poate fi in viitor.');
+            setDateError('Data nu poate fi in viitor.');
             return;
-        }
-        else {
+        } else {
             setDateError('');
         }
-
         if (!NAME_REGEX.test(name.trim()) || !name.trim()) return;
         if (!PHONE_REGEX.test(phone.trim()) || !phone.trim()) return;
-
-        insert({
-            name,
-            phone,
-            photo: poza || '',
-            birthdate: data.toISOString()
-        });
+        insert({ name, phone, photo: poza || '', birthdate: data.toISOString() });
         router.back();
     };
 
@@ -74,52 +87,76 @@ export default function AddBirthdayScreen() {
             allowsEditing: true,
             aspect: [1, 1],
         });
-
-        if (!result.canceled) {
-            setPoza(result.assets[0].uri);
-        }
+        if (!result.canceled) setPoza(result.assets[0].uri);
     };
 
     return (
         <View style={styles.container}>
-             <TouchableOpacity style={styles.buttonLeft} onPress={() => router.push('/')}>
-                <Text style={styles.buttonText}><IconSymbol size={16} name="chevron.left" color={'#ffff'}/></Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={pickImage} style={{ alignSelf: 'center' }}>
-                {poza ? <Image source={{ uri: poza }} style={styles.avatar} /> : 
-                    <View style={styles.avatarPlaceHolder}>
-                        <Text style={styles.icon}><IconSymbol size={30} name="camera" color={'#ffff'}/></Text>
-                    </View>}
+            <PixelStars areaHeight={280} />
+
+            {/* Back button */}
+            <TouchableOpacity style={styles.btnLeft} onPress={() => router.push('/')}>
+                <IconSymbol size={16} name="chevron.left" color={'#fff'} />
             </TouchableOpacity>
 
-            <Text style={styles.elements}>Nume</Text>
-            <TextInput
-                placeholder="Pop Ion"
-                placeholderTextColor="#bbbaba"
-                value={name}
-                onChangeText={(v) => { setName(v); validateName(v); }}
-                style={[styles.data, nameError ? styles.inputError : null]}
-            />
-            {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
-            <Text style={styles.elements}>
-                Telefon
-            </Text>
-            <TextInput
-                placeholder="07xx xxx xxx"
-                placeholderTextColor="#bbbaba"
-                value={phone}
-                onChangeText={(v) => { setPhone(v); validatePhone(v); }}
-                keyboardType="phone-pad"
-                style={[styles.data, phoneError ? styles.inputError : null]}
-            />
-            {phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null}
-            <Text style={styles.elements}>
-                Data nasterii
-            </Text>
-            <TouchableOpacity onPress={() => setShowPicker(true)}>
-                <Text style={[styles.data, dateError ? styles.inputError : null]}>{data.toLocaleDateString('ro-RO')}</Text>
+            {/* Header */}
+            <View style={styles.header}>
+                <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>adauga zi de</Text>
+                <Text style={[styles.title, { fontFamily: PIXEL }]}>nastere</Text>
+            </View>
+
+            {/* Avatar picker */}
+            <TouchableOpacity onPress={pickImage} style={styles.avatarWrapper}>
+                {poza
+                    ? <Image source={{ uri: poza }} style={styles.avatar} />
+                    : <View style={styles.avatarPlaceholder}>
+                        <IconSymbol size={28} name="camera" color={'#AAAAAA'} />
+                        <Text style={[styles.avatarHint, { fontFamily: PIXEL }]}>foto</Text>
+                      </View>
+                }
             </TouchableOpacity>
-            {dateError ? <Text style={styles.errorText}>{dateError}</Text> : null}
+
+            {/* Form card */}
+            <View style={styles.formCard}>
+
+                {/* Name */}
+                <Text style={[styles.label, { fontFamily: PIXEL }]}>nume</Text>
+                <TextInput
+                    placeholder="Pop Ion"
+                    placeholderTextColor="#BBBBBB"
+                    value={name}
+                    onChangeText={(v) => { setName(v); validateName(v); }}
+                    style={[styles.input, nameError ? styles.inputError : null, { fontFamily: PIXEL }]}
+                />
+                {nameError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{nameError}</Text> : null}
+
+                {/* Phone */}
+                <Text style={[styles.label, { fontFamily: PIXEL }]}>telefon</Text>
+                <TextInput
+                    placeholder="07xx xxx xxx"
+                    placeholderTextColor="#BBBBBB"
+                    value={phone}
+                    onChangeText={(v) => { setPhone(v); validatePhone(v); }}
+                    keyboardType="phone-pad"
+                    style={[styles.input, phoneError ? styles.inputError : null, { fontFamily: PIXEL }]}
+                />
+                {phoneError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{phoneError}</Text> : null}
+
+                {/* Date */}
+                <Text style={[styles.label, { fontFamily: PIXEL }]}>data nasterii</Text>
+                <TouchableOpacity onPress={() => setShowPicker(true)}>
+                    <View style={[styles.input, styles.dateInput, dateError ? styles.inputError : null]}>
+                        <Text style={[styles.dateText, { fontFamily: PIXEL }]}>
+                            {data.toLocaleDateString('ro-RO')}
+                        </Text>
+                        <IconSymbol size={14} name="calendar" color={'#AAAAAA'} />
+                    </View>
+                </TouchableOpacity>
+                {dateError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{dateError}</Text> : null}
+
+            </View>
+
+            {/* Date picker modal */}
             {showPicker && (
                 <DatePickerModal
                     value={data}
@@ -128,46 +165,146 @@ export default function AddBirthdayScreen() {
                 />
             )}
 
-            <TouchableOpacity style={styles.button} onPress={saveBirthday}>
-                <Text style={styles.buttonText}>Save</Text>
+            {/* Save button */}
+            <TouchableOpacity style={styles.saveButton} onPress={saveBirthday}>
+                <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>salveaza</Text>
             </TouchableOpacity>
 
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
-    container: {flex: 1, paddingTop: '30%', paddingHorizontal: 20, backgroundColor: '#fff'},
-    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, color: '#000' },
-    elements: { fontSize:18, fontWeight: 'bold', marginTop: 10 },
-    data: { backgroundColor: '#f0f0f0', padding: 10, borderRadius: 5, marginTop: 5 },
-    inputError: { borderWidth: 1, borderColor: '#e53935' },
-    errorText: { color: '#e53935', fontSize: 12, marginTop: 3 },
-    avatar: {borderRadius: 50, width: 100, height: 100, marginTop: 30, alignSelf: 'center'},
-    avatarPlaceHolder: {borderRadius: 50, width: 100, height: 100, backgroundColor: '#ccc', justifyContent: 'center', alignSelf: 'center'},
-    icon: {alignSelf: 'center'},
-    button: {
-        marginTop: 30,
-        backgroundColor: '#2196F3',
-        padding: 10,
-        borderRadius: 5,
-        width: '35%'
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 18,
-        alignSelf: 'center',
-        fontWeight: 'bold'
-    },
-    buttonLeft: {
-        display: 'flex',
-        position: 'absolute', left: 10, top: '10%',
-        alignSelf: 'flex-start',
-        backgroundColor: '#1A1A1A',
-        width: 40, height: 40, borderRadius: 28,
-        justifyContent: 'center', alignItems: 'center',
-        shadowColor: '#000', shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15, shadowRadius: 12, elevation: 8,
+    container: {
+        flex: 1,
+        backgroundColor: '#F7F7F5',
+        paddingHorizontal: 20,
+        paddingTop: '28%',
     },
 
+    // ── Nav ──
+    btnLeft: {
+        position: 'absolute',
+        left: 20,
+        top: '7%',
+        width: 42,
+        height: 42,
+        borderRadius: 14,
+        backgroundColor: '#111',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 10,
+        elevation: 6,
+    },
+
+    // ── Header ──
+    header: {
+        marginBottom: 22,
+        marginTop: 10,
+    },
+    headerLabel: {
+        fontSize: 9,
+        color: '#AAAAAA',
+        letterSpacing: 1,
+        marginBottom: 8,
+    },
+    title: {
+        fontSize: 22,
+        color: '#111111',
+        letterSpacing: 1,
+        lineHeight: 28,
+    },
+
+    // ── Avatar ──
+    avatarWrapper: {
+        alignSelf: 'center',
+        marginBottom: 24,
+    },
+    avatar: {
+        width: 90,
+        height: 90,
+        borderRadius: 26,
+    },
+    avatarPlaceholder: {
+        width: 90,
+        height: 90,
+        borderRadius: 26,
+        backgroundColor: '#EBEBEB',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 6,
+    },
+    avatarHint: {
+        fontSize: 7,
+        color: '#AAAAAA',
+        letterSpacing: 2,
+    },
+
+    // ── Form card ──
+    formCard: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
+        padding: 15,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 10,
+        elevation: 2,
+        marginBottom: 15,
+    },
+    label: {
+        fontSize: 7,
+        color: '#AAAAAA',
+        letterSpacing: 2,
+        marginBottom: 8,
+        marginTop: 9,
+    },
+    input: {
+        backgroundColor: '#F7F7F5',
+        borderRadius: 12,
+        padding: 12,
+        fontSize: 12,
+        color: '#111',
+    },
+    dateInput: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    dateText: {
+        fontSize: 10,
+        color: '#111',
+        letterSpacing: 1,
+    },
+    inputError: {
+        borderWidth: 1.5,
+        borderColor: '#FF3B30',
+    },
+    errorText: {
+        fontSize: 6,
+        color: '#FF3B30',
+        marginTop: 5,
+        letterSpacing: 1,
+    },
+
+    // ── Save button ──
+    saveButton: {
+        backgroundColor: '#111111',
+        borderRadius: 16,
+        paddingVertical: 16,
+        alignItems: 'center',
+        shadowColor: '#111',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+        elevation: 6,
+    },
+    saveButtonText: {
+        color: '#FFFFFF',
+        fontSize: 11,
+        letterSpacing: 2,
+    },
 });

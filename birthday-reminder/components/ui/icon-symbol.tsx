@@ -22,6 +22,7 @@ const MAPPING = {
   'pencil': 'edit',
   'trash': 'delete',
   'camera': 'photo-camera',
+  'calendar': 'calendar-month',
 } as IconMapping;
 
 /**
