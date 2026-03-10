@@ -4,7 +4,6 @@ import { Text, View, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions 
 import Svg, { Rect } from 'react-native-svg';
 import { useFonts } from 'expo-font';
 import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { insert } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
