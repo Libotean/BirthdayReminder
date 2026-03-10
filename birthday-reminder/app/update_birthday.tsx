@@ -7,12 +7,18 @@ import { update, getAll } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import DatePickerModal from '@/components/DatePickerModal';
 
+const NAME_REGEX = /^[a-zA-ZăâîșțĂÂÎȘȚ\s\-]+$/;
+const PHONE_REGEX = /^07\d{2}\s?\d{3}\s?\d{3}$/;
+
 export default function EditBirthdayScreen() {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [data, setData] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
     const [poza, setPoza] = useState<string | null>(null);
+    const [nameError, setNameError] = useState('');
+    const [phoneError, setPhoneError] = useState('');
+    const [dateError, setDateError] = useState('');
     const router = useRouter();
 
     const { id } = useLocalSearchParams();
@@ -27,7 +33,44 @@ export default function EditBirthdayScreen() {
         }
     }, []);
 
+    const validateName = (value: string) => {
+        if (!value.trim()) {
+            setNameError('Numele este obligatoriu.');
+        }
+        else if (!NAME_REGEX.test(value.trim())) {
+            setNameError('Numele poate contine doar litere, spatii si cratime.');
+        }
+        else {
+            setNameError('');
+        }
+    };
+
+    const validatePhone = (value: string) => {
+        if (!PHONE_REGEX.test(value.trim())) {
+            setPhoneError('Format invalid. Ex: 07xx xxx xxx');
+        }
+        else {
+            setPhoneError('');
+        }
+    };
+
     const saveBirthday = () => {
+        validateName(name);
+        validatePhone(phone);
+
+        const today = new Date();
+        // today.setHours(0, 0, 0, 0);
+        if (data >= today) {
+            setDateError('Data nasterii nu poate fi in viitor.');
+            return;
+        }
+        else {
+            setDateError('');
+        }
+
+        if (!NAME_REGEX.test(name.trim()) || !name.trim()) return;
+        if (!PHONE_REGEX.test(phone.trim()) || !phone.trim()) return;
+
         update(parseInt(id as string), {
             name,
             phone,
@@ -39,7 +82,7 @@ export default function EditBirthdayScreen() {
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            mediaTypes: ['images'],
             allowsEditing: true,
             aspect: [1, 1],
         });
@@ -55,33 +98,40 @@ export default function EditBirthdayScreen() {
                 <Text style={styles.buttonText}><IconSymbol size={16} name="chevron.left" color={'#ffff'}/></Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={pickImage} style={{ alignSelf: 'center' }}>
-                {poza ? <Image source={{ uri: poza }} style={styles.avatar} /> : <Image source={require('../assets/images/react-logo.png')} style={styles.avatar} />}
+                {poza ? <Image source={{ uri: poza }} style={styles.avatar} /> : 
+                    <View style={styles.avatarPlaceHolder}>
+                        <Text style={styles.icon}><IconSymbol size={30} name="camera" color={'#ffff'}/></Text>
+                    </View>}
             </TouchableOpacity>
 
             <Text style={styles.elements}>Nume</Text>
             <TextInput
                 placeholder="Pop Ion"
+                placeholderTextColor="#bbbaba"
                 value={name}
-                onChangeText={setName}
-                style={styles.data}
+                onChangeText={(v) => { setName(v); validateName(v); }}
+                style={[styles.data, nameError ? styles.inputError : null]}
             />
+            {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
             <Text style={styles.elements}>
                 Telefon
             </Text>
             <TextInput
                 placeholder="07xx xxx xxx"
+                placeholderTextColor="#bbbaba"
                 value={phone}
-                onChangeText={setPhone}
+                onChangeText={(v) => { setPhone(v); validatePhone(v); }}
                 keyboardType="phone-pad"
-                style={styles.data}
+                style={[styles.data, phoneError ? styles.inputError : null]}
             />
+            {phoneError ? <Text style={styles.errorText}>{phoneError}</Text> : null}
             <Text style={styles.elements}>
                 Data nasterii
             </Text>
             <TouchableOpacity onPress={() => setShowPicker(true)}>
-                <Text style={styles.data}>{data.toLocaleDateString('ro-RO')}</Text>
+                <Text style={[styles.data, dateError ? styles.inputError : null]}>{data.toLocaleDateString('ro-RO')}</Text>
             </TouchableOpacity>
-
+            {dateError ? <Text style={styles.errorText}>{dateError}</Text> : null}
             {showPicker && (
                 <DatePickerModal
                     value={data}
@@ -102,7 +152,11 @@ const styles = StyleSheet.create({
     title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, color: '#000' },
     elements: { fontSize:18, fontWeight: 'bold', marginTop: 10 },
     data: { backgroundColor: '#f0f0f0', padding: 10, borderRadius: 5, marginTop: 5 },
+    inputError: { borderWidth: 1, borderColor: '#e53935' },
+    errorText: { color: '#e53935', fontSize: 12, marginTop: 3 },
     avatar: {borderRadius: 50, width: 100, height: 100, marginTop: 30, alignSelf: 'center'},
+    avatarPlaceHolder: {borderRadius: 50, width: 100, height: 100, backgroundColor: '#ccc', justifyContent: 'center', alignSelf: 'center'},
+    icon: {alignSelf: 'center'},
     button: {
         marginTop: 30,
         backgroundColor: '#2196F3',

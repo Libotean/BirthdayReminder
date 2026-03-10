@@ -47,7 +47,7 @@ export default function AddBirthdayScreen() {
         validatePhone(phone);
 
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // today.setHours(0, 0, 0, 0);
         if (data >= today) {
             setDateError('Data nasterii nu poate fi in viitor.');
             return;
