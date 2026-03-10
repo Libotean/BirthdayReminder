@@ -23,6 +23,7 @@ const MAPPING = {
   'trash': 'delete',
   'camera': 'photo-camera',
   'calendar': 'calendar-month',
+  'gear': 'settings',
 } as IconMapping;
 
 /**

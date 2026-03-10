@@ -8,6 +8,7 @@ import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getAll, Birthday, getInitials, getAge, getDaysUntilNextBirthday } from '@/database/birthdays';
 import { useMemo } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const STAR_COLORS = ['#ffbe0b', '#fb5607', '#ff006e', '#8338ec', '#3a86ff'];
@@ -55,7 +56,7 @@ export default function BirthdayInfoScreen() {
     const daysText = getDaysUntilNextBirthday(person.birthdate);
 
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
 
             {/* Pixel stars */}
             <PixelStars areaHeight={320} />
@@ -150,7 +151,7 @@ export default function BirthdayInfoScreen() {
 
             
 
-        </View>
+        </SafeAreaView>
     );
 }
 

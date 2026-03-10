@@ -27,6 +27,7 @@ export default function RootLayout() {
           <Stack.Screen name="add_birthday" options={{ headerShown: false }} />
           <Stack.Screen name="info" options={{ headerShown: false }} />
           <Stack.Screen name="update_birthday" options={{ headerShown: false }} />
+          <Stack.Screen name="settings" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

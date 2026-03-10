@@ -8,6 +8,7 @@ import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import { Birthday, getAll, remove, getInitials, getDaysUntilNextBirthday, groupByMonth } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -28,7 +29,7 @@ function useStars(count: number, areaWidth: number, areaHeight: number): Star[] 
 }
 
 function PixelStars({ areaHeight }: { areaHeight: number }) {
-  const stars = useStars(35, SCREEN_WIDTH, areaHeight);
+  const stars = useStars(40, SCREEN_WIDTH, areaHeight);
 
   return (
     <View style={[StyleSheet.absoluteFillObject, { pointerEvents: 'none' }]}>
@@ -67,17 +68,24 @@ export default function TabOneScreen() {
   const PIXEL = 'PressStart2P_400Regular';
 
   return (
-    <View style={styles.container}>
-      <PixelStars areaHeight={200} />
+    <SafeAreaView style={styles.container}>
+      <PixelStars areaHeight={250} />
+
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={styles.btnLeft} onPress={() => router.push('/settings')}>
+          <IconSymbol size={20} name="gear" color={'#fff'} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.btnRight} onPress={() => router.push('/add_birthday')}>
+          <Text style={[styles.addButtonText, { fontFamily: PIXEL }]}>+</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Header */}
       <View style={styles.header}>
         <View>
           <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>zile de</Text>
           <Text style={[styles.title, { fontFamily: PIXEL }]}>nastere</Text>
         </View>
-        <TouchableOpacity style={styles.addButton} onPress={() => router.push('/add_birthday')}>
-          <Text style={[styles.addButtonText, { fontFamily: PIXEL }]}>+</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Count pill */}
@@ -180,14 +188,13 @@ export default function TabOneScreen() {
           );
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: '14%',
     paddingHorizontal: 20,
     backgroundColor: '#F7F7F5',
   },
@@ -197,7 +204,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 16
   },
   headerLabel: {
     fontSize: 9,
@@ -209,18 +216,39 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: '#111111',
     letterSpacing: 1,
-    lineHeight: 28,
+    lineHeight: 22,
   },
-  addButton: {
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  btnLeft: {
+    top: '7%',
     width: 45,
     height: 45,
     borderRadius: 15,
-    backgroundColor: '#111111',
+    backgroundColor: '#111',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#111',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  btnRight: {
+    right: 0,
+    top: '7%',
+    width: 45,
+    height: 45,
+    borderRadius: 15,
+    backgroundColor: '#111',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
     shadowRadius: 10,
     elevation: 6,
   },
