@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Text, View, TouchableOpacity, StyleSheet, Image, SectionList, Dimensions } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
@@ -53,6 +53,63 @@ function PixelStars({ areaHeight }: { areaHeight: number }) {
 export default function TabOneScreen() {
   const [birthdays, setBirthdays] = useState<Birthday[]>([]);
   const router = useRouter();
+  
+  
+  const frames = [
+      require('@/assets/cat/F0.png'),
+      require('@/assets/cat/F1.png'),
+      require('@/assets/cat/F2.png'),
+      require('@/assets/cat/F3.png'),
+      require('@/assets/cat/F4.png'),
+      require('@/assets/cat/F5.png'),
+      require('@/assets/cat/F6.png'),
+      require('@/assets/cat/F7.png'),
+  ];
+
+  const [currentFrame, setCurrentFrame] = useState(0);
+  const [catX, setCatX] = useState(0);
+  const [facingLeft, setFacingLeft] = useState(false);
+  const catXRef = useRef(0);
+  const facingLeftRef = useRef(false);
+  const CAT_SIZE = 48;
+  // const SPEED = SCREEN_WIDTH / 800;
+  const lastTimeRef = useRef<number>(Date.now());
+
+  useEffect(() => {
+      
+      const frameInterval = setInterval(() => {
+          setCurrentFrame(f => (f + 1) % frames.length);
+      }, 100);
+
+      // miscare
+      const moveInterval = setInterval(() => {
+          const now = Date.now();
+          const delta = now - lastTimeRef.current;
+          lastTimeRef.current = now;
+
+          const maxX = SCREEN_WIDTH - CAT_SIZE - 40;
+          const pixelsPerMs = SCREEN_WIDTH / 9500; 
+          let newX = catXRef.current + (facingLeftRef.current ? -1 : 1) * pixelsPerMs * delta;
+
+          if (newX >= maxX) {
+              newX = maxX;
+              facingLeftRef.current = true;
+              setFacingLeft(true);
+          } else if (newX <= 0) {
+              newX = 0;
+              facingLeftRef.current = false;
+              setFacingLeft(false);
+          }
+
+          catXRef.current = newX;
+          setCatX(newX);
+      }, 16);
+
+      return () => {
+          clearInterval(frameInterval);
+          clearInterval(moveInterval);
+      };
+  }, []);
 
   const [fontsLoaded] = useFonts({ PressStart2P_400Regular });
 
@@ -69,7 +126,7 @@ export default function TabOneScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <PixelStars areaHeight={250} />
+      <PixelStars areaHeight={200} />
 
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.btnLeft} onPress={() => router.push('/settings')}>
@@ -87,7 +144,7 @@ export default function TabOneScreen() {
           <Text style={[styles.title, { fontFamily: PIXEL }]}>nastere</Text>
         </View>
       </View>
-
+      
       {/* Count pill */}
       {birthdays.length > 0 && (
         <View style={styles.countPill}>
@@ -96,6 +153,19 @@ export default function TabOneScreen() {
           </Text>
         </View>
       )}
+
+      <View style={{ height: CAT_SIZE - 20, marginBottom: 0 }}>
+          <Image
+              source={frames[currentFrame]}
+              style={{
+                  position: 'absolute',
+                  left: catX,
+                  width: CAT_SIZE,
+                  height: CAT_SIZE,
+                  transform: [{ scaleX: facingLeft ? -1 : 1 }],
+              }}
+          />
+      </View>
 
       <SectionList
         sections={sections}
@@ -199,7 +269,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7F7F5',
   },
 
-  // ── Header ──────────────────────────────
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -259,7 +328,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 
-  // ── Count pill ──────────────────────────
   countPill: {
     alignSelf: 'flex-start',
     backgroundColor: '#EBEBEB',
@@ -274,7 +342,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 
-  // ── Section Header ──────────────────────
   sectionHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -293,7 +360,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E5E5',
   },
 
-  // ── Card ────────────────────────────────
   card: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -320,7 +386,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
-  // ── Avatar ──────────────────────────────
   avatar: {
     width: 46,
     height: 46,
@@ -345,7 +410,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 
-  // ── Card content ────────────────────────
   cardContent: {
     flex: 1,
     marginLeft: 14,
@@ -366,7 +430,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 
-  // ── Days Badge ──────────────────────────
   daysBadge: {
     backgroundColor: '#F0F0F0',
     borderRadius: 12,
@@ -385,7 +448,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 
-  // ── Delete ──────────────────────────────
   deleteButton: {
     backgroundColor: '#FF3B30',
     justifyContent: 'center',
@@ -396,7 +458,6 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 
-  // ── Empty State ─────────────────────────
   emptyContainer: {
     alignItems: 'center',
     marginTop: '35%',
