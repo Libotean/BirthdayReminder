@@ -20,6 +20,7 @@ import {
   validateHour,
   validateMinutes,
 } from "@/database/settings";
+import { scheduleAllNotifications } from "@/database/notifications"
 import { Switch } from "react-native";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useMemo } from "react";
@@ -220,7 +221,13 @@ export default function SettingsScreen() {
             ) : null}
           </View>
 
-          <TouchableOpacity style={styles.saveButton} onPress={saveSettings}>
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={() => {
+              saveSettings();
+              scheduleAllNotifications();
+            }}
+          >
             <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>
               salveaza
             </Text>

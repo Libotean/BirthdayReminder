@@ -8,6 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { update, getAll, validateName, validatePhone } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import DatePickerModal from '@/components/DatePickerModal';
+import { scheduleAllNotifications } from "@/database/notifications"
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const STAR_COLORS = ['#ffbe0b', '#fb5607', '#ff006e', '#8338ec', '#3a86ff'];
@@ -158,7 +159,7 @@ export default function EditBirthdayScreen() {
                 />
             )}
 
-            <TouchableOpacity style={styles.saveButton} onPress={saveBirthday}>
+            <TouchableOpacity style={styles.saveButton} onPress={() => {saveBirthday(); scheduleAllNotifications();}}>
                 <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>salveaza</Text>
             </TouchableOpacity>
 
