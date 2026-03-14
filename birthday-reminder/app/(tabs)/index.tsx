@@ -29,7 +29,7 @@ function useStars(count: number, areaWidth: number, areaHeight: number): Star[] 
 }
 
 function PixelStars({ areaHeight }: { areaHeight: number }) {
-  const stars = useStars(40, SCREEN_WIDTH, areaHeight);
+  const stars = useStars(55, SCREEN_WIDTH, areaHeight);
 
   return (
     <View style={[StyleSheet.absoluteFillObject, { pointerEvents: 'none' }]}>
@@ -71,7 +71,9 @@ export default function TabOneScreen() {
   const [facingLeft, setFacingLeft] = useState(false);
   const catXRef = useRef(0);
   const facingLeftRef = useRef(false);
-  const CAT_SIZE = 48;
+  const CAT_WIDTH = 72;
+  const CAT_HEIGHT = 58;
+  const LEFT_OFFSET = 5
   // const SPEED = SCREEN_WIDTH / 800;
   const lastTimeRef = useRef<number>(Date.now());
 
@@ -87,16 +89,16 @@ export default function TabOneScreen() {
           const delta = now - lastTimeRef.current;
           lastTimeRef.current = now;
 
-          const maxX = SCREEN_WIDTH - CAT_SIZE - 40;
-          const pixelsPerMs = SCREEN_WIDTH / 9500; 
+          const maxX = SCREEN_WIDTH - CAT_WIDTH - 30;
+          const pixelsPerMs = SCREEN_WIDTH / 9000; 
           let newX = catXRef.current + (facingLeftRef.current ? -1 : 1) * pixelsPerMs * delta;
 
           if (newX >= maxX) {
               newX = maxX;
               facingLeftRef.current = true;
               setFacingLeft(true);
-          } else if (newX <= 0) {
-              newX = 0;
+          } else if (newX <= -LEFT_OFFSET) {
+              newX = -LEFT_OFFSET;
               facingLeftRef.current = false;
               setFacingLeft(false);
           }
@@ -125,8 +127,8 @@ export default function TabOneScreen() {
   const PIXEL = 'PressStart2P_400Regular';
 
   return (
-    <SafeAreaView style={styles.container}>
-      <PixelStars areaHeight={200} />
+  <SafeAreaView style={styles.container}>
+      <PixelStars areaHeight={250} />
 
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.btnLeft} onPress={() => router.push('/settings')}>
@@ -154,14 +156,14 @@ export default function TabOneScreen() {
         </View>
       )}
 
-      <View style={{ height: CAT_SIZE - 20, marginBottom: 0 }}>
+      <View style={{ height: CAT_HEIGHT, marginBottom: -10}}>
           <Image
               source={frames[currentFrame]}
               style={{
                   position: 'absolute',
                   left: catX,
-                  width: CAT_SIZE,
-                  height: CAT_SIZE,
+                  width: CAT_WIDTH,
+                  height: CAT_HEIGHT,
                   transform: [{ scaleX: facingLeft ? -1 : 1 }],
               }}
           />
