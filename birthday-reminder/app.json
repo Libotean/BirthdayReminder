@@ -4,7 +4,7 @@
     "slug": "birthday-reminder",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/bd_logo.png",
     "scheme": "birthdayreminder",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
