@@ -24,6 +24,8 @@ const MAPPING = {
   'camera': 'photo-camera',
   'calendar': 'calendar-month',
   'gear': 'settings',
+  'phone': 'phone',
+  'message': 'message'
 } as IconMapping;
 
 /**

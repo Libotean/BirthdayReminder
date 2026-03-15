@@ -7,6 +7,7 @@ import { useFonts } from 'expo-font';
 import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getAll, Birthday, getInitials, getAge, getDaysUntilNextBirthday } from '@/database/birthdays';
+import { whatsappPerson, callPerson, messagePerson } from '@/database/actions';
 import { useMemo } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -58,20 +59,16 @@ export default function BirthdayInfoScreen() {
     return (
         <SafeAreaView style={styles.container}>
 
-            {/* Pixel stars */}
             <PixelStars areaHeight={320} />
 
-            {/* Back button */}
             <TouchableOpacity style={styles.btnLeft} onPress={() => router.push('/')}>
                 <IconSymbol size={16} name="chevron.left" color={'#fff'} />
             </TouchableOpacity>
 
-            {/* Edit button */}
             <TouchableOpacity style={styles.btnRight} onPress={() => router.push(`/update_birthday?id=${person.id}`)}>
                 <IconSymbol size={16} name="pencil" color={'#fff'} />
             </TouchableOpacity>
 
-            {/* Avatar */}
             <View style={styles.avatarWrapper}>
                 {isToday ? (
                     <LinearGradient
@@ -100,29 +97,32 @@ export default function BirthdayInfoScreen() {
                 )}
             </View>
 
-            {/* Name */}
             <Text style={[styles.name, { fontFamily: PIXEL }]}>{person.name}</Text>
 
-            {/* Date */}
             <Text style={[styles.dateText, { fontFamily: PIXEL }]}>
                 {new Date(person.birthdate).toLocaleDateString('ro-RO')}
             </Text>
 
-            {/* Divider */}
+            <View style={styles.actionsRow}>
+                <TouchableOpacity style={styles.actionButton} onPress={() => callPerson(person?.phone)}>
+                    <Image source={require('../assets/images/phone.png')} style={styles.actionIcon} />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.actionButton} onPress={() => messagePerson(person?.phone)}>
+                    <Image source={require('../assets/images/message.png')} style={styles.actionIcon} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => whatsappPerson(person?.phone)}>
+                    <Image source={require('../assets/images/whatsapp_logo.png')} style={styles.whatsappButton} />
+                </TouchableOpacity>
+            </View>
+
             <View style={styles.divider} />
-
-            {/* Stats row */}
             <View style={styles.statsRow}>
-
-                {/* Age card */}
                 <View style={styles.statCard}>
                     <Text style={[styles.statValue, { fontFamily: PIXEL }]}>
                         {getAge(person.birthdate)}
                     </Text>
                     <Text style={[styles.statLabel, { fontFamily: PIXEL }]}>ani</Text>
                 </View>
-
-                {/* Days card — gradient if today */}
                 {isToday ? (
                     <LinearGradient
                         colors={['#FFBE0B', '#FB5607', '#FF006E', '#8338EC', '#3A86FF']}
@@ -149,8 +149,6 @@ export default function BirthdayInfoScreen() {
 
             </View>
 
-            
-
         </SafeAreaView>
     );
 }
@@ -162,8 +160,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingTop: '14%',
     },
-
-    // ── Nav buttons ──
     btnLeft: {
         position: 'absolute',
         left: 20,
@@ -196,8 +192,6 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         elevation: 6,
     },
-
-    // ── Avatar ──
     avatarWrapper: {
         alignSelf: 'center',
         marginTop: '18%',
@@ -230,8 +224,6 @@ const styles = StyleSheet.create({
         fontSize: 22,
         color: '#555',
     },
-
-    // ── Name & date ──
     name: {
         fontSize: 16,
         color: '#111',
@@ -246,16 +238,12 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         letterSpacing: 2,
     },
-
-    // ── Divider ──
     divider: {
         height: 1,
         backgroundColor: '#E5E5E5',
         marginVertical: 28,
         marginHorizontal: 10,
     },
-
-    // ── Stats ──
     statsRow: {
         flexDirection: 'row',
         gap: 12,
@@ -301,8 +289,6 @@ const styles = StyleSheet.create({
         color: '#AAAAAA',
         letterSpacing: 2,
     },
-
-    // ── Today banner ──
     todayBanner: {
         marginTop: 20,
         backgroundColor: '#111',
@@ -316,5 +302,29 @@ const styles = StyleSheet.create({
         color: '#fff',
         letterSpacing: 1,
         lineHeight: 18,
+    },
+
+    actionsRow: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 20,
+        marginTop: 16,
+        marginBottom: 8,
+    },
+    actionButton: {
+        width: 50, height: 50,
+        borderRadius: 20,
+        backgroundColor: '#F0F0F0',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    whatsappButton: {
+        width: 50,
+        height: 50,
+        resizeMode: 'contain',
+    },
+    actionIcon: {
+        width: 20, height: 18,
+        resizeMode: 'contain',
     },
 });
