@@ -8,34 +8,8 @@ import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { getAll, Birthday, getInitials, getAge, getDaysUntilNextBirthday } from '@/database/birthdays';
 import { whatsappPerson, callPerson, messagePerson } from '@/database/actions';
-import { useMemo } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const STAR_COLORS = ['#ffbe0b', '#fb5607', '#ff006e', '#8338ec', '#3a86ff'];
-
-function useStars(count: number, areaWidth: number, areaHeight: number) {
-    return useMemo(() => Array.from({ length: count }, () => ({
-        x: Math.random() * areaWidth,
-        y: Math.random() * areaHeight,
-        size: Math.random() < 0.5 ? 3 : 5,
-        color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
-        opacity: 0.25 + Math.random() * 0.35,
-    })), [count, areaWidth, areaHeight]);
-}
-
-function PixelStars({ areaHeight }: { areaHeight: number }) {
-    const stars = useStars(30, SCREEN_WIDTH, areaHeight);
-    return (
-        <View style={[StyleSheet.absoluteFillObject, { pointerEvents: 'none' }]}>
-            <Svg width={SCREEN_WIDTH} height={areaHeight}>
-                {stars.map((s, i) => (
-                    <Rect key={i} x={s.x} y={s.y} width={s.size} height={s.size} fill={s.color} opacity={s.opacity} />
-                ))}
-            </Svg>
-        </View>
-    );
-}
+import PixelStars from '@/components/PixelStars';
 
 export default function BirthdayInfoScreen() {
     const { id } = useLocalSearchParams();
@@ -59,7 +33,7 @@ export default function BirthdayInfoScreen() {
     return (
         <SafeAreaView style={styles.container}>
 
-            <PixelStars areaHeight={320} />
+            <PixelStars count={70} areaHeight={320} />
 
             <TouchableOpacity style={styles.btnLeft} onPress={() => router.push('/')}>
                 <IconSymbol size={16} name="chevron.left" color={'#fff'} />

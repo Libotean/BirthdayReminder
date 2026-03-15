@@ -9,46 +9,11 @@ import { Birthday, getAll, remove, getInitials, getDaysUntilNextBirthday, groupB
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import PixelStars from '@/components/PixelStars';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type Star = { x: number; y: number; size: number; color: string; opacity: number };
-
-const STAR_COLORS = ['#ffbe0b', '#fb5607', '#ff006e', '#8338ec', '#3a86ff'];
-
-function useStars(count: number, areaWidth: number, areaHeight: number): Star[] {
-  return useMemo(() => {
-    return Array.from({ length: count }, () => ({
-      x: Math.random() * areaWidth,
-      y: Math.random() * areaHeight,
-      size: Math.random() < 0.5 ? 3 : 5,
-      color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
-      opacity: 0.3 + Math.random() * 0.4,
-    }));
-  }, [count, areaWidth, areaHeight]);
-}
-
-function PixelStars({ areaHeight }: { areaHeight: number }) {
-  const stars = useStars(55, SCREEN_WIDTH, areaHeight);
-
-  return (
-    <View style={[StyleSheet.absoluteFillObject, { pointerEvents: 'none' }]}>
-      <Svg width={SCREEN_WIDTH} height={areaHeight}>
-        {stars.map((s, i) => (
-          <Rect
-            key={i}
-            x={s.x}
-            y={s.y}
-            width={s.size}
-            height={s.size}
-            fill={s.color}
-            opacity={s.opacity}
-          />
-        ))}
-      </Svg>
-    </View>
-  );
-}
 
 export default function TabOneScreen() {
   const [birthdays, setBirthdays] = useState<Birthday[]>([]);
@@ -128,7 +93,7 @@ export default function TabOneScreen() {
 
   return (
   <SafeAreaView style={styles.container}>
-      <PixelStars areaHeight={250} />
+      <PixelStars count={50} areaHeight={250} />
 
       <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.btnLeft} onPress={() => router.push('/settings')}>
