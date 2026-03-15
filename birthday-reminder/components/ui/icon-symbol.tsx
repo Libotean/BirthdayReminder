@@ -25,7 +25,8 @@ const MAPPING = {
   'calendar': 'calendar-month',
   'gear': 'settings',
   'phone': 'phone',
-  'message': 'message'
+  'message': 'message',
+  'person': 'person'
 } as IconMapping;
 
 /**

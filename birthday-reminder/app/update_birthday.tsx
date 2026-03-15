@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { Text, View, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import Svg, { Rect } from 'react-native-svg';
 import { useFonts } from 'expo-font';
 import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import * as ImagePicker from 'expo-image-picker';
-import { update, getAll, validateName, validatePhone } from '@/database/birthdays';
+import { update, getAll, validateName, validatePhone, formatPhone } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import DatePickerModal from '@/components/DatePickerModal';
 import { scheduleAllNotifications } from "@/database/notifications"
+import * as Contacts from 'expo-contacts';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const STAR_COLORS = ['#ffbe0b', '#fb5607', '#ff006e', '#8338ec', '#3a86ff'];
@@ -63,6 +64,20 @@ export default function EditBirthdayScreen() {
     if (!fontsLoaded) return null;
     const PIXEL = 'PressStart2P_400Regular';
 
+    const pickContact = async () => {
+        const { status } = await Contacts.requestPermissionsAsync();
+        if (status !== 'granted') return;
+
+        const result = await Contacts.presentContactPickerAsync();
+        if (!result) return;
+        
+        const contact = result as any;
+        if (contact.name) setName(contact.name);
+        if (contact.phoneNumbers?.[0]?.number) {
+            setPhone(formatPhone(contact.phoneNumbers[0].number));
+        }
+    };    
+
     const saveBirthday = () => {
         const nErr = validateName(name);
         const pErr = validatePhone(phone);
@@ -80,6 +95,7 @@ export default function EditBirthdayScreen() {
             photo: poza || '',
             birthdate: data.toISOString()
         });
+        scheduleAllNotifications();
         router.back();
     };
 
@@ -93,77 +109,92 @@ export default function EditBirthdayScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <PixelStars areaHeight={280} />
+        <KeyboardAvoidingView
+            style={{ flex: 1, backgroundColor: '#F7F7F5' }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -500}
+        >
+           <ScrollView
+                contentContainerStyle={{ paddingHorizontal: 20, paddingTop: '28%' }}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+            >
+                <PixelStars areaHeight={280} />
 
-            <TouchableOpacity style={styles.btnLeft} onPress={() => router.back()}>
-                <IconSymbol size={16} name="chevron.left" color={'#fff'} />
-            </TouchableOpacity>
-
-            <View style={styles.header}>
-                <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>editeaza zi de</Text>
-                <Text style={[styles.title, { fontFamily: PIXEL }]}>nastere</Text>
-            </View>
-
-            <TouchableOpacity onPress={pickImage} style={styles.avatarWrapper}>
-                {poza
-                    ? <Image source={{ uri: poza }} style={styles.avatar} />
-                    : <View style={styles.avatarPlaceholder}>
-                        <IconSymbol size={28} name="camera" color={'#AAAAAA'} />
-                        <Text style={[styles.avatarHint, { fontFamily: PIXEL }]}>foto</Text>
-                      </View>
-                }
-            </TouchableOpacity>
-
-            <View style={styles.formCard}>
-
-                <Text style={[styles.label, { fontFamily: PIXEL }]}>nume</Text>
-                <TextInput
-                    placeholder="Pop Ion"
-                    placeholderTextColor="#BBBBBB"
-                    value={name}
-                    onChangeText={(v) => { setName(v); setNameError(validateName(v)); }}
-                    style={[styles.input, nameError ? styles.inputError : null, { fontFamily: PIXEL }]}
-                />
-                {nameError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{nameError}</Text> : null}
-
-                <Text style={[styles.label, { fontFamily: PIXEL }]}>telefon</Text>
-                <TextInput
-                    placeholder="07xx xxx xxx"
-                    placeholderTextColor="#BBBBBB"
-                    value={phone}
-                    onChangeText={(v) => { setPhone(v); setPhoneError(validatePhone(v)); }}
-                    keyboardType="phone-pad"
-                    style={[styles.input, phoneError ? styles.inputError : null, { fontFamily: PIXEL }]}
-                />
-                {phoneError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{phoneError}</Text> : null}
-
-                <Text style={[styles.label, { fontFamily: PIXEL }]}>data nasterii</Text>
-                <TouchableOpacity onPress={() => setShowPicker(true)}>
-                    <View style={[styles.input, styles.dateInput, dateError ? styles.inputError : null]}>
-                        <Text style={[styles.dateText, { fontFamily: PIXEL }]}>
-                            {data.toLocaleDateString('ro-RO')}
-                        </Text>
-                        <IconSymbol size={14} name="calendar" color={'#AAAAAA'} />
-                    </View>
+                <TouchableOpacity style={styles.btnLeft} onPress={() => router.back()}>
+                    <IconSymbol size={16} name="chevron.left" color={'#fff'} />
                 </TouchableOpacity>
-                {dateError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{dateError}</Text> : null}
 
-            </View>
+                <View style={styles.header}>
+                    <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>editeaza zi de</Text>
+                    <Text style={[styles.title, { fontFamily: PIXEL }]}>nastere</Text>
+                </View>
 
-            {showPicker && (
-                <DatePickerModal
-                    value={data}
-                    onChange={(d) => setData(d)}
-                    onClose={() => setShowPicker(false)}
-                />
-            )}
+                <TouchableOpacity onPress={pickImage} style={styles.avatarWrapper}>
+                    {poza
+                        ? <Image source={{ uri: poza }} style={styles.avatar} />
+                        : <View style={styles.avatarPlaceholder}>
+                            <IconSymbol size={28} name="camera" color={'#AAAAAA'} />
+                            <Text style={[styles.avatarHint, { fontFamily: PIXEL }]}>foto</Text>
+                        </View>
+                    }
+                </TouchableOpacity>
 
-            <TouchableOpacity style={styles.saveButton} onPress={() => {saveBirthday(); scheduleAllNotifications();}}>
-                <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>salveaza</Text>
-            </TouchableOpacity>
+                <View style={styles.formCard}>
 
-        </View>
+                    <Text style={[styles.label, { fontFamily: PIXEL }]}>nume</Text>
+                    <TextInput
+                        placeholder="Pop Ion"
+                        placeholderTextColor="#BBBBBB"
+                        value={name}
+                        onChangeText={(v) => { setName(v); setNameError(validateName(v)); }}
+                        style={[styles.input, nameError ? styles.inputError : null, { fontFamily: PIXEL }]}
+                    />
+                    {nameError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{nameError}</Text> : null}
+
+                    <Text style={[styles.label, { fontFamily: PIXEL }]}>telefon</Text>
+                    <View style={styles.phoneRow}>
+                        <TextInput
+                            placeholder="07xx xxx xxx"
+                            placeholderTextColor="#BBBBBB"
+                            value={phone}
+                            onChangeText={(v) => { setPhone(v); setPhoneError(validatePhone(v)); }}
+                            keyboardType="phone-pad"
+                            style={[styles.phoneInput, phoneError ? styles.inputError : null, { fontFamily: PIXEL }]}
+                        />
+                        <TouchableOpacity style={styles.contactBtn} onPress={pickContact}>
+                            <IconSymbol size={18} name="person" color={'#111'} />
+                        </TouchableOpacity>
+                    </View>
+                    {phoneError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{phoneError}</Text> : null}
+
+                    <Text style={[styles.label, { fontFamily: PIXEL }]}>data nasterii</Text>
+                    <TouchableOpacity onPress={() => setShowPicker(true)}>
+                        <View style={[styles.input, styles.dateInput, dateError ? styles.inputError : null]}>
+                            <Text style={[styles.dateText, { fontFamily: PIXEL }]}>
+                                {data.toLocaleDateString('ro-RO')}
+                            </Text>
+                            <IconSymbol size={14} name="calendar" color={'#AAAAAA'} />
+                        </View>
+                    </TouchableOpacity>
+                    {dateError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{dateError}</Text> : null}
+
+                </View>
+
+                {showPicker && (
+                    <DatePickerModal
+                        value={data}
+                        onChange={(d) => setData(d)}
+                        onClose={() => setShowPicker(false)}
+                    />
+                )}
+
+                <TouchableOpacity style={styles.saveButton} onPress={() => {saveBirthday()}}>
+                    <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>salveaza</Text>
+                </TouchableOpacity>
+
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
@@ -171,11 +202,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F7F7F5',
-        paddingHorizontal: 20,
-        paddingTop: '28%',
     },
 
-    // ── Nav ──
     btnLeft: {
         position: 'absolute',
         left: 20,
@@ -193,7 +221,6 @@ const styles = StyleSheet.create({
         elevation: 6,
     },
 
-    // ── Header ──
     header: {
         marginBottom: 22,
         marginTop: 10,
@@ -211,7 +238,6 @@ const styles = StyleSheet.create({
         lineHeight: 28,
     },
 
-    // ── Avatar ──
     avatarWrapper: {
         alignSelf: 'center',
         marginBottom: 24,
@@ -236,7 +262,6 @@ const styles = StyleSheet.create({
         letterSpacing: 2,
     },
 
-    // ── Form card ──
     formCard: {
         backgroundColor: '#FFFFFF',
         borderRadius: 20,
@@ -282,8 +307,28 @@ const styles = StyleSheet.create({
         marginTop: 5,
         letterSpacing: 1,
     },
+    phoneRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    phoneInput: {
+        flex: 1,
+        backgroundColor: '#F7F7F5',
+        borderRadius: 12,
+        padding: 12,
+        fontSize: 12,
+        color: '#111',
+    },
+    contactBtn: {
+        width: 44,
+        height: 44,
+        borderRadius: 12,
+        backgroundColor: '#EBEBEB',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 
-    // ── Save button ──
     saveButton: {
         backgroundColor: '#111111',
         borderRadius: 16,

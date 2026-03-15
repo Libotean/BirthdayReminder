@@ -31,59 +31,54 @@ export async function scheduleAllNotifications() {
         const bday = new Date(birthday.birthdate);
         const today = new Date();
 
-        if (settings.reminderOnDay === 1) {
-            const trigger = new Date(
-                today.getFullYear(),
-                bday.getMonth(),
-                bday.getDate(),
-                settings.reminderHour,
-                settings.reminderMinutes,
-                0
-            );
-            if (trigger < today) trigger.setFullYear(today.getFullYear() + 1);
+        for (const yearsAhead of [0, 1]) {
 
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: '🎂 La multi ani!',
-                    body: `Azi e ziua lui ${birthday.name}!`,
-                },
-                trigger: {
-                    type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
-                    month: trigger.getMonth() + 1,
-                    day: trigger.getDate(),
-                    hour: trigger.getHours(),
-                    minute: trigger.getMinutes(),
-                    repeats: true, 
-                },
-            });
-        }
+            if (settings.reminderOnDay === 1) {
+                const trigger = new Date(
+                    today.getFullYear() + yearsAhead,
+                    bday.getMonth(),
+                    bday.getDate(),
+                    settings.reminderHour,
+                    settings.reminderMinutes,
+                    0
+                );
+                if (trigger > today) {
+                    await Notifications.scheduleNotificationAsync({
+                        content: {
+                            title: '🎂 La multi ani!',
+                            body: `Azi e ziua lui ${birthday.name}!`,
+                        },
+                        trigger: {
+                            type: Notifications.SchedulableTriggerInputTypes.DATE,
+                            date: trigger,
+                        },
+                    });
+                }
+            }
 
-        if (settings.reminderDaysBefore > 0) {
-            const trigger = new Date(
-                today.getFullYear(),
-                bday.getMonth(),
-                bday.getDate(),
-                settings.reminderHour,
-                settings.reminderMinutes,
-                0
-            );
-            if (trigger < today) trigger.setFullYear(today.getFullYear() + 1);
-            trigger.setDate(trigger.getDate() - settings.reminderDaysBefore);
-
-            await Notifications.scheduleNotificationAsync({
-                content: {
-                    title: '🎂 Reminder!',
-                    body: `In ${settings.reminderDaysBefore} zile e ziua lui ${birthday.name}!`,
-                },
-                trigger: {
-                    type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
-                    month: trigger.getMonth() + 1,
-                    day: trigger.getDate(),
-                    hour: trigger.getHours(),
-                    minute: trigger.getMinutes(),
-                    repeats: true, 
-                },
-            });
+            if (settings.reminderDaysBefore > 0) {
+                const trigger = new Date(
+                    today.getFullYear() + yearsAhead,
+                    bday.getMonth(),
+                    bday.getDate(),
+                    settings.reminderHour,
+                    settings.reminderMinutes,
+                    0
+                );
+                trigger.setDate(trigger.getDate() - settings.reminderDaysBefore);
+                if (trigger > today) {
+                    await Notifications.scheduleNotificationAsync({
+                        content: {
+                            title: '🎂 Reminder!',
+                            body: `In ${settings.reminderDaysBefore} zile e ziua lui ${birthday.name}!`,
+                        },
+                        trigger: {
+                            type: Notifications.SchedulableTriggerInputTypes.DATE,
+                            date: trigger,
+                        },
+                    });
+                }
+            }
         }
     }
 }

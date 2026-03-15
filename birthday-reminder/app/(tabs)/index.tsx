@@ -156,7 +156,7 @@ export default function TabOneScreen() {
         </View>
       )}
 
-      <View style={{ height: CAT_HEIGHT, marginBottom: -10}}>
+      <View style={{ height: CAT_HEIGHT, marginBottom: 5}}>
           <Image
               source={frames[currentFrame]}
               style={{

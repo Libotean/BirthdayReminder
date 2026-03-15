@@ -85,7 +85,16 @@ export function validateName(value: string): string {
 };
 
 export function validatePhone(value: string): string {
+    if (!value.trim()) return '';
     const PHONE_REGEX = /^07\d{2}\s?\d{3}\s?\d{3}$/;
     if (!PHONE_REGEX.test(value.trim())) return 'Format invalid. Ex: 07xx xxx xxx';
     return '';
 };
+
+export function formatPhone(phone: string): string {
+    let cleaned = phone.replace(/[\s\-\(\)\.]/g, '');
+    if (cleaned.startsWith('+40')) {
+        cleaned = '0' + cleaned.slice(3);
+    }
+    return cleaned;
+}

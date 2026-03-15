@@ -172,7 +172,7 @@ export default function SettingsScreen() {
                   value={String(reminderDaysBefore)}
                   onChangeText={(v) => setReminderDaysBefore(Number(v))}
                   keyboardType="numeric"
-                  style={styles.settingInput}
+                  style={[styles.settingInput, { fontFamily: PIXEL, fontSize: 10 }]}
                 />
               </View>
             )}
@@ -192,7 +192,7 @@ export default function SettingsScreen() {
                   }}
                   keyboardType="numeric"
                   maxLength={2}
-                  style={styles.settingInput}
+                  style={[styles.settingInput, { fontFamily: PIXEL, fontSize: 10 }]}
                 />
                 <Text style={[styles.timeSeparator, { fontFamily: PIXEL }]}>
                   :
@@ -205,7 +205,7 @@ export default function SettingsScreen() {
                   }}
                   keyboardType="numeric"
                   maxLength={2}
-                  style={styles.settingInput}
+                  style={[styles.settingInput, { fontFamily: PIXEL, fontSize: 10 }]}
                 />
               </View>
             </View>
