@@ -98,3 +98,19 @@ export function formatPhone(phone: string): string {
     }
     return cleaned;
 }
+
+export function exists(name: string, birthdate: string, phone: string): boolean {
+    if (phone) {
+        const result = db.getFirstSync(
+            'SELECT id FROM birthdays WHERE phone = ?',
+            phone
+        ) as any;
+        return result !== null;
+    } else {
+        const result = db.getFirstSync(
+            'SELECT id FROM birthdays WHERE name = ? AND birthdate = ?',
+            name, birthdate
+        ) as any;
+        return result !== null;
+    }
+}

@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { Text, View, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import Svg, { Rect } from 'react-native-svg';
 import { useFonts } from 'expo-font';
 import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import * as ImagePicker from 'expo-image-picker';
 import { insert, validateName, validatePhone, formatPhone } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useMemo } from 'react';
 import DatePickerModal from '@/components/DatePickerModal';
 import { scheduleAllNotifications } from "@/database/notifications"
 import * as Contacts from 'expo-contacts';

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Text, View, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
-import Svg, { Rect } from 'react-native-svg';
 import { useFonts } from 'expo-font';
 import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import * as ImagePicker from 'expo-image-picker';

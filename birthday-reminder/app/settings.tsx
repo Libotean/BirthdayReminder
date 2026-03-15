@@ -9,9 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Dimensions,
 } from "react-native";
-import Svg, { Rect } from "react-native-svg";
 import { useFonts } from "expo-font";
 import { PressStart2P_400Regular } from "@expo-google-fonts/press-start-2p";
 import {
@@ -24,6 +22,9 @@ import { scheduleAllNotifications } from "@/database/notifications"
 import { Switch } from "react-native";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import PixelStars from '@/components/PixelStars';
+import { exportData, importData } from '@/database/backup';
+import * as DocumentPicker from 'expo-document-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SettingsScreen() {
   const [reminderOnDay, setReminderOnDay] = useState(1);
@@ -66,137 +67,161 @@ export default function SettingsScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: "#F7F7F5" }}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: "16%" }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#F7F7F5' }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1, backgroundColor: "#F7F7F5" }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <PixelStars count={30} areaHeight={180} />
+        <ScrollView
+          contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 20 }}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <PixelStars count={30} areaHeight={180} />
 
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={styles.btnLeft}
-            onPress={() => router.push("/")}
-          >
-            <IconSymbol size={16} name="chevron.left" color={"#fff"} />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.header}>
-          <Text style={[styles.title, { fontFamily: PIXEL }]}>Setari</Text>
-        </View>
-
-        <View>
-          <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>
-            Notificari
-          </Text>
-
-          <View style={styles.formCard}>
-            <View style={styles.settingRow}>
-              <Text style={[styles.label, { fontFamily: PIXEL }]}>
-                reminder azi
-              </Text>
-              <Switch
-                value={reminderOnDay === 1}
-                onValueChange={(v) => {
-                  setReminderOnDay(v ? 1 : 0);
-                }}
-                trackColor={{ false: "#E5E5E5", true: "#111" }}
-                thumbColor={"#fff"}
-              />
-            </View>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={styles.btnLeft}
+              onPress={() => router.push("/")}
+            >
+              <IconSymbol size={16} name="chevron.left" color={"#fff"} />
+            </TouchableOpacity>
           </View>
 
-          <View style={styles.formCard}>
-            <View style={styles.settingRow}>
-              <Text style={[styles.label, { fontFamily: PIXEL }]}>
-                cu cat timp inainte
-              </Text>
-              <Switch
-                value={reminderDaysBeforeEnable === 1}
-                onValueChange={(v) => {
-                  setReminderDaysBeforeEnable(v ? 1 : 0);
-                }}
-                trackColor={{ false: "#E5E5E5", true: "#111" }}
-                thumbColor={"#fff"}
-              />
-            </View>
-            {reminderDaysBeforeEnable === 1 && (
-              <View style={styles.inputRow}>
-                <Text style={[styles.label, { fontFamily: PIXEL }]}>
-                  numar zile
-                </Text>
-                <TextInput
-                  value={String(reminderDaysBefore)}
-                  onChangeText={(v) => setReminderDaysBefore(Number(v))}
-                  keyboardType="numeric"
-                  style={[styles.settingInput, { fontFamily: PIXEL, fontSize: 10 }]}
-                />
-              </View>
-            )}
+          <View style={styles.header}>
+            <Text style={[styles.title, { fontFamily: PIXEL }]}>Setari</Text>
           </View>
 
-          <View style={styles.formCard}>
-            <View style={styles.settingRow}>
-              <Text style={[styles.label, { fontFamily: PIXEL }]}>
-                ora reminder
-              </Text>
-              <View style={styles.timeGroup}>
-                <TextInput
-                  value={String(reminderHour)}
-                  onChangeText={(v) => {
-                    setReminderHour(Number(v));
-                    setHourError(validateHour(v));
-                  }}
-                  keyboardType="numeric"
-                  maxLength={2}
-                  style={[styles.settingInput, { fontFamily: PIXEL, fontSize: 10 }]}
-                />
-                <Text style={[styles.timeSeparator, { fontFamily: PIXEL }]}>
-                  :
-                </Text>
-                <TextInput
-                  value={String(reminderMinutes)}
-                  onChangeText={(v) => {
-                    setReminderMinutes(Number(v));
-                    setMinutesError(validateMinutes(v));
-                  }}
-                  keyboardType="numeric"
-                  maxLength={2}
-                  style={[styles.settingInput, { fontFamily: PIXEL, fontSize: 10 }]}
-                />
-              </View>
-            </View>
-            {hourError ? (
-              <Text style={[styles.errorText, { fontFamily: PIXEL }]}>
-                {hourError}
-              </Text>
-            ) : null}
-            {minutesError ? (
-              <Text style={[styles.errorText, { fontFamily: PIXEL }]}>
-                {minutesError}
-              </Text>
-            ) : null}
-          </View>
-
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={() => {
-              saveSettings();
-              scheduleAllNotifications();
-            }}
-          >
-            <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>
-              salveaza
+          <View>
+            <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>
+              Notificari
             </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+
+            <View style={styles.formCard}>
+              <View style={styles.settingRow}>
+                <Text style={[styles.label, { fontFamily: PIXEL }]}>
+                  reminder azi
+                </Text>
+                <Switch
+                  value={reminderOnDay === 1}
+                  onValueChange={(v) => {
+                    setReminderOnDay(v ? 1 : 0);
+                  }}
+                  trackColor={{ false: "#E5E5E5", true: "#111" }}
+                  thumbColor={"#fff"}
+                />
+              </View>
+            </View>
+
+            <View style={styles.formCard}>
+              <View style={styles.settingRow}>
+                <Text style={[styles.label, { fontFamily: PIXEL }]}>
+                  cu cat timp inainte
+                </Text>
+                <Switch
+                  value={reminderDaysBeforeEnable === 1}
+                  onValueChange={(v) => {
+                    setReminderDaysBeforeEnable(v ? 1 : 0);
+                  }}
+                  trackColor={{ false: "#E5E5E5", true: "#111" }}
+                  thumbColor={"#fff"}
+                />
+              </View>
+              {reminderDaysBeforeEnable === 1 && (
+                <View style={styles.inputRow}>
+                  <Text style={[styles.label, { fontFamily: PIXEL }]}>
+                    numar zile
+                  </Text>
+                  <TextInput
+                    value={String(reminderDaysBefore)}
+                    onChangeText={(v) => setReminderDaysBefore(Number(v))}
+                    keyboardType="numeric"
+                    style={[styles.settingInput, { fontFamily: PIXEL, fontSize: 10 }]}
+                  />
+                </View>
+              )}
+            </View>
+
+            <View style={styles.formCard}>
+              <View style={styles.settingRow}>
+                <Text style={[styles.label, { fontFamily: PIXEL }]}>
+                  ora reminder
+                </Text>
+                <View style={styles.timeGroup}>
+                  <TextInput
+                    value={String(reminderHour)}
+                    onChangeText={(v) => {
+                      setReminderHour(Number(v));
+                      setHourError(validateHour(v));
+                    }}
+                    keyboardType="numeric"
+                    maxLength={2}
+                    style={[styles.settingInput, { fontFamily: PIXEL, fontSize: 10 }]}
+                  />
+                  <Text style={[styles.timeSeparator, { fontFamily: PIXEL }]}>
+                    :
+                  </Text>
+                  <TextInput
+                    value={String(reminderMinutes)}
+                    onChangeText={(v) => {
+                      setReminderMinutes(Number(v));
+                      setMinutesError(validateMinutes(v));
+                    }}
+                    keyboardType="numeric"
+                    maxLength={2}
+                    style={[styles.settingInput, { fontFamily: PIXEL, fontSize: 10 }]}
+                  />
+                </View>
+              </View>
+              {hourError ? (
+                <Text style={[styles.errorText, { fontFamily: PIXEL }]}>
+                  {hourError}
+                </Text>
+              ) : null}
+              {minutesError ? (
+                <Text style={[styles.errorText, { fontFamily: PIXEL }]}>
+                  {minutesError}
+                </Text>
+              ) : null}
+            </View>
+
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={() => {
+                saveSettings();
+                scheduleAllNotifications();
+              }}
+            >
+              <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>
+                salveaza
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{marginTop: 35}}>
+            <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>
+              Import/Export Date
+            </Text>
+            <View style={styles.formCard}>
+              <TouchableOpacity style={styles.settingRow} onPress={exportData}>
+                  <Text style={[styles.label, { fontFamily: PIXEL }]}>exporta date</Text>
+                  <IconSymbol size={16} name="square.and.arrow.up" color={'#111'} />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.formCard}>
+              <TouchableOpacity style={styles.settingRow} onPress={async () => {
+                  const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
+                  if (!result.canceled) {
+                      await importData(result.assets[0].uri);
+                  }
+              }}>
+                  <Text style={[styles.label, { fontFamily: PIXEL }]}>importa date</Text>
+                  <IconSymbol size={16} name="square.and.arrow.down" color={'#111'} />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
@@ -320,5 +345,10 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     paddingHorizontal: 10,
     letterSpacing: 1,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#F0F0F0',
+    marginHorizontal: 10,
   },
 });

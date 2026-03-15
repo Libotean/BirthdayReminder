@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { Text, View, TouchableOpacity, StyleSheet, Image, SectionList, Dimensions } from 'react-native';
-import Svg, { Rect } from 'react-native-svg';
 import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
