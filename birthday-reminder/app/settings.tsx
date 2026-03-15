@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from "react-native";
 import { useFonts } from "expo-font";
 import { PressStart2P_400Regular } from "@expo-google-fonts/press-start-2p";
@@ -34,7 +35,7 @@ export default function SettingsScreen() {
   const [reminderMinutes, setReminderMinutes] = useState(0);
   const [hourError, setHourError] = useState("");
   const [minutesError, setMinutesError] = useState("");
-
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const [fontsLoaded] = useFonts({ PressStart2P_400Regular });
   if (!fontsLoaded) return null;
@@ -63,7 +64,6 @@ export default function SettingsScreen() {
       reminderHour,
       reminderMinutes,
     });
-    router.back();
   };
 
   return (
@@ -186,15 +186,19 @@ export default function SettingsScreen() {
             </View>
 
             <TouchableOpacity
-              style={styles.saveButton}
-              onPress={() => {
-                saveSettings();
-                scheduleAllNotifications();
-              }}
+                style={[styles.saveButton, loading && { opacity: 0.6 }]}
+                onPress={async () => {
+                    if (loading) return;
+                    saveSettings();
+                    setLoading(true);
+                    await scheduleAllNotifications();
+                    setLoading(false);
+                    router.back();
+                }}
             >
-              <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>
-                salveaza
-              </Text>
+                <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>
+                    {loading ? 'se salveaza...' : 'salveaza'}
+                </Text>
             </TouchableOpacity>
           </View>
           <View style={{marginTop: 35}}>
@@ -211,8 +215,14 @@ export default function SettingsScreen() {
               <TouchableOpacity style={styles.settingRow} onPress={async () => {
                   const result = await DocumentPicker.getDocumentAsync({ type: 'application/json' });
                   if (!result.canceled) {
-                      await importData(result.assets[0].uri);
+                      const { importate, sarite, eroare } = await importData(result.assets[0].uri);
+                      if (eroare) {
+                          Alert.alert('Eroare', eroare);
+                      } else {
+                          Alert.alert('Import complet', `${importate} importate, ${sarite} sarite`);
+                      }
                   }
+                  router.back();
               }}>
                   <Text style={[styles.label, { fontFamily: PIXEL }]}>importa date</Text>
                   <IconSymbol size={16} name="square.and.arrow.down" color={'#111'} />

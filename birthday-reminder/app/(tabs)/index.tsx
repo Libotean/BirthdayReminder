@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { Text, View, TouchableOpacity, StyleSheet, Image, SectionList, Dimensions } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, Image, SectionList, Dimensions, Alert} from 'react-native';
 import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
@@ -11,8 +11,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import PixelStars from '@/components/PixelStars';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-type Star = { x: number; y: number; size: number; color: string; opacity: number };
 
 export default function TabOneScreen() {
   const [birthdays, setBirthdays] = useState<Birthday[]>([]);
@@ -87,7 +85,7 @@ export default function TabOneScreen() {
 
   if (!fontsLoaded) return null;
 
-  const sections = groupByMonth(birthdays);
+  const sections = useMemo(() => groupByMonth(birthdays), [birthdays]);
   const PIXEL = 'PressStart2P_400Regular';
 
   return (
@@ -198,12 +196,26 @@ export default function TabOneScreen() {
 
           return (
             <ReanimatedSwipeable
+              key={item.id}
               renderRightActions={() => (
                 <TouchableOpacity
                   style={styles.deleteButton}
                   onPress={() => {
-                    remove(item.id!);
-                    setBirthdays(getAll());
+                    Alert.alert(
+                        'Sterge',
+                        `Esti sigur ca vrei sa stergi pe ${item.name}?`,
+                        [
+                            { text: 'Anuleaza', style: 'cancel' },
+                            {
+                                text: 'Sterge',
+                                style: 'destructive',
+                                onPress: () => {
+                                    remove(item.id!);
+                                    setBirthdays(getAll());
+                                }
+                            }
+                        ]
+                    );
                   }}
                 >
                   <IconSymbol size={18} name="trash" color={'#fff'} />

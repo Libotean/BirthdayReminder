@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Text, View, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useFonts } from 'expo-font';
@@ -20,6 +20,7 @@ export default function EditBirthdayScreen() {
     const [nameError, setNameError] = useState('');
     const [phoneError, setPhoneError] = useState('');
     const [dateError, setDateError] = useState('');
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
     const { id } = useLocalSearchParams();
 
@@ -52,7 +53,7 @@ export default function EditBirthdayScreen() {
         }
     };    
 
-    const saveBirthday = () => {
+    const saveBirthday = useCallback(() => {
         const nErr = validateName(name);
         const pErr = validatePhone(phone);
         const today = new Date();
@@ -71,7 +72,7 @@ export default function EditBirthdayScreen() {
         });
         scheduleAllNotifications();
         router.back();
-    };
+    }, [name, phone, data, poza, id]);
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -163,8 +164,8 @@ export default function EditBirthdayScreen() {
                     />
                 )}
 
-                <TouchableOpacity style={styles.saveButton} onPress={() => {saveBirthday()}}>
-                    <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>salveaza</Text>
+                <TouchableOpacity style={[styles.saveButton, loading && { opacity: 0.6 }]} onPress={async () => {if (loading) return; saveBirthday(); setLoading(true);}}>
+                    <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>{loading ? 'se salveaza...' : 'salveaza'}</Text>
                 </TouchableOpacity>
 
             </ScrollView>
