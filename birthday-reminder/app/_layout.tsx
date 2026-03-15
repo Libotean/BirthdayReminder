@@ -6,6 +6,7 @@ import { initDB } from '@/database/db';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { requestPermissions, scheduleAllNotifications, registerBackgroundTask, setupNotificationChannel } from '@/database/notifications';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -15,7 +16,14 @@ export default function RootLayout() {
 
   useEffect(() => {
     initDB();
-  }, []);
+    requestPermissions().then(async (granted) => {
+        if (granted) {
+            await setupNotificationChannel();
+            await scheduleAllNotifications();
+            registerBackgroundTask();
+        }
+    });
+}, []);
 
   const colorScheme = useColorScheme();
 
