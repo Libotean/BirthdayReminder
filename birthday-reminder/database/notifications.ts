@@ -2,14 +2,14 @@ import * as Notifications from 'expo-notifications';
 import { getAll } from './birthdays';
 import { getSettings } from './settings';
 import * as TaskManager from 'expo-task-manager';
-import * as BackgroundFetch from 'expo-background-fetch';
+import * as BackgroundTask from 'expo-background-task';
 import { Platform } from 'react-native';
 
 const TASK_NAME = 'reschedule-notifications';
 
 TaskManager.defineTask(TASK_NAME, async () => {
     await scheduleAllNotifications();
-    return BackgroundFetch.BackgroundFetchResult.NewData;
+    return BackgroundTask.BackgroundTaskResult.Success;
 });
 
 Notifications.setNotificationHandler({
@@ -23,11 +23,13 @@ Notifications.setNotificationHandler({
 });
 
 export async function registerBackgroundTask() {
-    await BackgroundFetch.registerTaskAsync(TASK_NAME, {
-        minimumInterval: 60 * 60 * 24, // o data pe zi
-        stopOnTerminate: false, // continua chiar daca aplicatia e inchisa
-        startOnBoot: true, // porneste la restart telefon
-    });
+    try {
+        await BackgroundTask.registerTaskAsync(TASK_NAME, {
+            minimumInterval: 60 * 60 * 24,
+        });
+    } catch (e) {
+        console.log('Background task not available:', e);
+    }
 }
 
 export async function requestPermissions(): Promise<boolean> {

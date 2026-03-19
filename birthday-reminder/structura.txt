@@ -1,0 +1,77 @@
+./.expo/devices.json
+./.expo/README.md
+./.expo/types/router.d.ts
+./.expo/web/cache/production/images/favicon/favicon-a4e030697a7571b3e95d31860e4da55d2f98e5e861e2b55e414f45a8556828ba-contain-transparent/favicon-48.png
+./.gitignore
+./.vscode/extensions.json
+./.vscode/settings.json
+./app/(tabs)/index.tsx
+./app/(tabs)/_layout.tsx
+./app/add_birthday.tsx
+./app/info.tsx
+./app/settings.tsx
+./app/update_birthday.tsx
+./app/_layout.tsx
+./app.json
+./assets/cat/F0.png
+./assets/cat/F1.png
+./assets/cat/F2.png
+./assets/cat/F3.png
+./assets/cat/F4.png
+./assets/cat/F5.png
+./assets/cat/F6.png
+./assets/cat/F7.png
+./assets/images/android-icon-background.png
+./assets/images/android-icon-foreground.png
+./assets/images/android-icon-monochrome.png
+./assets/images/bd_logo.png
+./assets/images/favicon.png
+./assets/images/icon.png
+./assets/images/message.png
+./assets/images/partial-react-logo.png
+./assets/images/phone.png
+./assets/images/react-logo.png
+./assets/images/react-logo@2x.png
+./assets/images/react-logo@3x.png
+./assets/images/whatsapp_logo.png
+./components/DatePickerModal.tsx
+./components/external-link.tsx
+./components/haptic-tab.tsx
+./components/hello-wave.tsx
+./components/parallax-scroll-view.tsx
+./components/PixelStars.tsx
+./components/themed-text.tsx
+./components/themed-view.tsx
+./components/ui/collapsible.tsx
+./components/ui/icon-symbol.ios.tsx
+./components/ui/icon-symbol.tsx
+./constants/theme.ts
+./database/actions.ts
+./database/backup.ts
+./database/birthdays.ts
+./database/db.ts
+./database/notifications.ts
+./database/settings.ts
+./eas.json
+./eslint.config.js
+./expo-env.d.ts
+./hooks/use-color-scheme.ts
+./hooks/use-color-scheme.web.ts
+./hooks/use-theme-color.ts
+./package-lock.json
+./package.json
+./README.md
+./scripts/reset-project.js
+./structura.txt
+./tsconfig.json
+rm assets/images/partial-react-logo.png \
+   assets/images/react-logo.png \
+   assets/images/react-logo@2x.png \
+   assets/images/react-logo@3x.png \
+   assets/images/favicon.png \
+   components/hello-wave.tsx \
+   components/parallax-scroll-view.tsx \
+   components/themed-text.tsx \
+   components/themed-view.tsx \
+   components/external-link.tsx \
+   hooks/use-theme-color.ts

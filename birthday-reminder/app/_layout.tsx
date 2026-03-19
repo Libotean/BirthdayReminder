@@ -19,8 +19,8 @@ export default function RootLayout() {
     requestPermissions().then(async (granted) => {
         if (granted) {
             await setupNotificationChannel();
-            await scheduleAllNotifications();
-            registerBackgroundTask();
+            await scheduleAllNotifications().catch(() => {});
+            registerBackgroundTask().catch(() => {});
         }
     });
 }, []);
