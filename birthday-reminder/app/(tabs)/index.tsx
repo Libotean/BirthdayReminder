@@ -4,7 +4,7 @@ import { Text, View, TouchableOpacity, StyleSheet, Image, SectionList, Dimension
 import { useFonts } from 'expo-font';
 import { LinearGradient } from 'expo-linear-gradient';
 import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
-import { Birthday, getAll, remove, getInitials, getDaysUntilNextBirthday, groupByMonth } from '@/database/birthdays';
+import { Birthday, getAll, remove, getInitials, getDaysUntilNextBirthday, groupByMonth, getAge } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -101,15 +101,13 @@ export default function TabOneScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Header */}
       <View style={styles.header}>
         <View>
-          <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>zile de</Text>
+          <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>Zile de</Text>
           <Text style={[styles.title, { fontFamily: PIXEL }]}>nastere</Text>
         </View>
       </View>
       
-      {/* Count pill */}
       {birthdays.length > 0 && (
         <View style={styles.countPill}>
           <Text style={[styles.countText, { fontFamily: PIXEL }]}>
@@ -182,7 +180,7 @@ export default function TabOneScreen() {
                     {item.name}
                   </Text>
                   {isToday && (
-                    <Text style={[styles.todayLabel, { fontFamily: PIXEL }]}>La multi ani!</Text>
+                    <Text style={[styles.todayLabel, { fontFamily: PIXEL }]}>Implineste {getAge(item.birthdate)} {getAge(item.birthdate) == 1 ? ("an!") : ("ani!")}</Text>
                   )}
                 </View>
                 <View style={[styles.daysBadge, isToday && styles.daysBadgeToday]}>
@@ -251,6 +249,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: 10,
     marginBottom: 16
   },
   headerLabel: {

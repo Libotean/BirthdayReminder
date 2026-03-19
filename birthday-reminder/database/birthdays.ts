@@ -78,9 +78,9 @@ export function groupByMonth(birthdays: Birthday[]) {
 };
 
 export function validateName(value: string): string {
-    const NAME_REGEX = /^[a-zA-ZăâîșțĂÂÎȘȚ\s\-]+$/;
+    // const NAME_REGEX = /^[a-zA-ZăâîșțĂÂÎȘȚ\s\-]+$/;
     if (!value.trim()) return 'Numele este obligatoriu.';
-    if (!NAME_REGEX.test(value.trim())) return 'Doar litere, spatii si cratime.';
+    // if (!NAME_REGEX.test(value.trim())) return 'Doar litere, spatii si cratime.';
     return '';
 };
 

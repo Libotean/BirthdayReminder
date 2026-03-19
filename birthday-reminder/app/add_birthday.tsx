@@ -84,7 +84,7 @@ export default function AddBirthdayScreen() {
                 </TouchableOpacity>
 
                 <View style={styles.header}>
-                    <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>adauga zi de</Text>
+                    <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>Adauga zi de</Text>
                     <Text style={[styles.title, { fontFamily: PIXEL }]}>nastere</Text>
                 </View>
 
@@ -100,7 +100,7 @@ export default function AddBirthdayScreen() {
 
                 <View style={styles.formCard}>
 
-                    <Text style={[styles.label, { fontFamily: PIXEL }]}>nume</Text>
+                    <Text style={[styles.label, { fontFamily: PIXEL }]}>Nume</Text>
                     <TextInput
                         placeholder="Pop Ion"
                         placeholderTextColor="#BBBBBB"
@@ -110,7 +110,7 @@ export default function AddBirthdayScreen() {
                     />
                     {nameError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{nameError}</Text> : null}
 
-                    <Text style={[styles.label, { fontFamily: PIXEL }]}>telefon</Text>
+                    <Text style={[styles.label, { fontFamily: PIXEL }]}>Telefon</Text>
                     <View style={styles.phoneRow}>
                         <TextInput
                             placeholder="07xx xxx xxx"
@@ -126,7 +126,7 @@ export default function AddBirthdayScreen() {
                     </View>
                     {phoneError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{phoneError}</Text> : null}
 
-                    <Text style={[styles.label, { fontFamily: PIXEL }]}>data nasterii</Text>
+                    <Text style={[styles.label, { fontFamily: PIXEL }]}>Data nasterii</Text>
                     <TouchableOpacity onPress={() => setShowPicker(true)}>
                         <View style={[styles.input, styles.dateInput, dateError ? styles.inputError : null]}>
                             <Text style={[styles.dateText, { fontFamily: PIXEL }]}>
@@ -148,7 +148,7 @@ export default function AddBirthdayScreen() {
                 )}
 
                 <TouchableOpacity style={[styles.saveButton, loading && { opacity: 0.6 }]} onPress={async () => {if (loading) return; saveBirthday(); setLoading(true);}}>
-                    <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>{loading ? 'se salveaza...' : 'salveaza'}</Text>
+                    <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>{loading ? 'Se salveaza...' : 'Salveaza'}</Text>
                 </TouchableOpacity>
 
             </ScrollView>
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     btnLeft: {
         position: 'absolute',
         left: 20,
-        top: '7%',
+        top: '12%',
         width: 42,
         height: 42,
         borderRadius: 14,

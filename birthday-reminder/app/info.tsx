@@ -95,7 +95,12 @@ export default function BirthdayInfoScreen() {
                     <Text style={[styles.statValue, { fontFamily: PIXEL }]}>
                         {getAge(person.birthdate)}
                     </Text>
-                    <Text style={[styles.statLabel, { fontFamily: PIXEL }]}>ani</Text>
+                    {getAge(person.birthdate) == 1? (
+                        <Text style={[styles.statLabel, { fontFamily: PIXEL }]}>an</Text>
+                    ) : (
+                        <Text style={[styles.statLabel, { fontFamily: PIXEL }]}>ani</Text>
+                    )}
+                    
                 </View>
                 {isToday ? (
                     <LinearGradient

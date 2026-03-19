@@ -100,7 +100,7 @@ export default function SettingsScreen() {
             <View style={styles.formCard}>
               <View style={styles.settingRow}>
                 <Text style={[styles.label, { fontFamily: PIXEL }]}>
-                  reminder azi
+                  Reminder in ziua de nastere
                 </Text>
                 <Switch
                   value={reminderOnDay === 1}
@@ -116,7 +116,7 @@ export default function SettingsScreen() {
             <View style={styles.formCard}>
               <View style={styles.settingRow}>
                 <Text style={[styles.label, { fontFamily: PIXEL }]}>
-                  cu cat timp inainte
+                  Reminder anticipat
                 </Text>
                 <Switch
                   value={reminderDaysBeforeEnable === 1}
@@ -130,7 +130,7 @@ export default function SettingsScreen() {
               {reminderDaysBeforeEnable === 1 && (
                 <View style={styles.inputRow}>
                   <Text style={[styles.label, { fontFamily: PIXEL }]}>
-                    numar zile
+                    Cu cate zile inainte?
                   </Text>
                   <TextInput
                     value={String(reminderDaysBefore)}
@@ -145,7 +145,7 @@ export default function SettingsScreen() {
             <View style={styles.formCard}>
               <View style={styles.settingRow}>
                 <Text style={[styles.label, { fontFamily: PIXEL }]}>
-                  ora reminder
+                  La ce ora?
                 </Text>
                 <View style={styles.timeGroup}>
                   <TextInput
@@ -197,7 +197,7 @@ export default function SettingsScreen() {
                 }}
             >
                 <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>
-                    {loading ? 'se salveaza...' : 'salveaza'}
+                    {loading ? 'Se salveaza...' : 'Salveaza'}
                 </Text>
             </TouchableOpacity>
           </View>
@@ -207,7 +207,7 @@ export default function SettingsScreen() {
             </Text>
             <View style={styles.formCard}>
               <TouchableOpacity style={styles.settingRow} onPress={exportData}>
-                  <Text style={[styles.label, { fontFamily: PIXEL }]}>exporta date</Text>
+                  <Text style={[styles.label, { fontFamily: PIXEL }]}>Exporta date</Text>
                   <IconSymbol size={16} name="square.and.arrow.up" color={'#111'} />
               </TouchableOpacity>
             </View>
@@ -224,7 +224,7 @@ export default function SettingsScreen() {
                   }
                   router.back();
               }}>
-                  <Text style={[styles.label, { fontFamily: PIXEL }]}>importa date</Text>
+                  <Text style={[styles.label, { fontFamily: PIXEL }]}>Importa date</Text>
                   <IconSymbol size={16} name="square.and.arrow.down" color={'#111'} />
               </TouchableOpacity>
             </View>
