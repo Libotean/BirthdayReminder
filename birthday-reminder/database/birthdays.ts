@@ -36,23 +36,17 @@ export function getInitials(name: string) {
     return names;
 };
 
-export function getDaysUntilNextBirthday(birthdate: string) {
+export function getDaysUntilNextBirthday(birthdate: string, azi: string = 'Azi!', zi: string = 'zi', zile: string = 'zile') {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const bday = new Date(birthdate);
     const next = new Date(today.getFullYear(), bday.getMonth(), bday.getDate());
     if (next < today) next.setFullYear(today.getFullYear() + 1);
     const diff = Math.ceil((next.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    if (diff === 0) {
-        return 'Azi!';
-    }
-    else if (diff === 1) {
-        return `${diff} zi`;
-    }
-    else {
-        return `${diff} zile`;
-    }
-};
+    if (diff === 0) return azi;
+    else if (diff === 1) return `${diff} ${zi}`;
+    else return `${diff} ${zile}`;
+}
 
 export function getAge(birthdate: string) {
     const year = new Date(birthdate).getFullYear();
@@ -61,21 +55,20 @@ export function getAge(birthdate: string) {
     return age;
 };
 
-export function groupByMonth(birthdays: Birthday[]) {
-    const months = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie', 'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'];
+export function groupByMonth(birthdays: Birthday[], luni: string[]) {
     const grouped: { [key: string]: Birthday[] } = {};
 
     birthdays.forEach(b => {
-        const month = months[new Date(b.birthdate).getMonth()];
+        const month = luni[new Date(b.birthdate).getMonth()];
         if (!grouped[month]) grouped[month] = [];
         grouped[month].push(b);
     });
 
-    return Object.keys(grouped).map(month => ({ 
+    return Object.keys(grouped).map(month => ({
         title: month,
         data: grouped[month]
     }));
-};
+}
 
 export function validateName(value: string): string {
     // const NAME_REGEX = /^[a-zA-ZăâîșțĂÂÎȘȚ\s\-]+$/;

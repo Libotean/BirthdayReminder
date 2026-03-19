@@ -26,6 +26,8 @@ import PixelStars from '@/components/PixelStars';
 import { exportData, importData } from '@/database/backup';
 import * as DocumentPicker from 'expo-document-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { useLang } from '@/i18n/LangContext';
 
 export default function SettingsScreen() {
   const [reminderOnDay, setReminderOnDay] = useState(1);
@@ -36,6 +38,15 @@ export default function SettingsScreen() {
   const [hourError, setHourError] = useState("");
   const [minutesError, setMinutesError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const { tr, setLang } = useLang();
+  const [langValue, setLangValue] = useState<'ro' | 'en'>(
+      () => (getSettings()?.lang as 'ro' | 'en') ?? 'ro'
+  );
+  const langItems = [
+      {label: tr.settings.romana, value: 'ro' as 'ro' | 'en'},
+      {label: tr.settings.engleza, value: 'en' as 'ro' | 'en'},
+  ];
   const router = useRouter();
   const [fontsLoaded] = useFonts({ PressStart2P_400Regular });
   if (!fontsLoaded) return null;
@@ -49,6 +60,7 @@ export default function SettingsScreen() {
       setReminderDaysBefore(settings.reminderDaysBefore || 3);
       setReminderHour(settings.reminderHour || 9);
       setReminderMinutes(settings.reminderMinutes);
+      setLangValue((settings.lang as 'ro' | 'en') ?? 'ro');
     }, []),
   );
 
@@ -63,6 +75,7 @@ export default function SettingsScreen() {
         reminderDaysBeforeEnable === 1 ? reminderDaysBefore : 0,
       reminderHour,
       reminderMinutes,
+      lang: getSettings().lang
     });
   };
 
@@ -73,6 +86,7 @@ export default function SettingsScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
+          nestedScrollEnabled={true}
           contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 20 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -89,18 +103,18 @@ export default function SettingsScreen() {
           </View>
 
           <View style={styles.header}>
-            <Text style={[styles.title, { fontFamily: PIXEL }]}>Setari</Text>
+            <Text style={[styles.title, { fontFamily: PIXEL }]}>{tr.settings.title}</Text>
           </View>
 
           <View>
             <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>
-              Notificari
+              {tr.settings.notificari}
             </Text>
 
             <View style={styles.formCard}>
               <View style={styles.settingRow}>
-                <Text style={[styles.label, { fontFamily: PIXEL }]}>
-                  Reminder in ziua de nastere
+                <Text style={[styles.label, { fontFamily: PIXEL, fontSize: 6 }]}>
+                  {tr.settings.reminderZiua}
                 </Text>
                 <Switch
                   value={reminderOnDay === 1}
@@ -116,7 +130,7 @@ export default function SettingsScreen() {
             <View style={styles.formCard}>
               <View style={styles.settingRow}>
                 <Text style={[styles.label, { fontFamily: PIXEL }]}>
-                  Reminder anticipat
+                  {tr.settings.reminderAnticipat}
                 </Text>
                 <Switch
                   value={reminderDaysBeforeEnable === 1}
@@ -130,7 +144,7 @@ export default function SettingsScreen() {
               {reminderDaysBeforeEnable === 1 && (
                 <View style={styles.inputRow}>
                   <Text style={[styles.label, { fontFamily: PIXEL }]}>
-                    Cu cate zile inainte?
+                    {tr.settings.cuCateZile}
                   </Text>
                   <TextInput
                     value={String(reminderDaysBefore)}
@@ -145,7 +159,7 @@ export default function SettingsScreen() {
             <View style={styles.formCard}>
               <View style={styles.settingRow}>
                 <Text style={[styles.label, { fontFamily: PIXEL }]}>
-                  La ce ora?
+                  {tr.settings.laOra}
                 </Text>
                 <View style={styles.timeGroup}>
                   <TextInput
@@ -197,17 +211,17 @@ export default function SettingsScreen() {
                 }}
             >
                 <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>
-                    {loading ? 'Se salveaza...' : 'Salveaza'}
+                    {loading ? tr.settings.seSalveaza : tr.settings.salveaza}
                 </Text>
             </TouchableOpacity>
           </View>
           <View style={{marginTop: 35}}>
             <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>
-              Import/Export Date
+              {tr.settings.importExport}
             </Text>
             <View style={styles.formCard}>
               <TouchableOpacity style={styles.settingRow} onPress={exportData}>
-                  <Text style={[styles.label, { fontFamily: PIXEL }]}>Exporta date</Text>
+                  <Text style={[styles.label, { fontFamily: PIXEL }]}>{tr.settings.exporta}</Text>
                   <IconSymbol size={16} name="square.and.arrow.up" color={'#111'} />
               </TouchableOpacity>
             </View>
@@ -217,16 +231,45 @@ export default function SettingsScreen() {
                   if (!result.canceled) {
                       const { importate, sarite, eroare } = await importData(result.assets[0].uri);
                       if (eroare) {
-                          Alert.alert('Eroare', eroare);
+                          Alert.alert(tr.settings.eroare, eroare);
                       } else {
-                          Alert.alert('Import complet', `${importate} importate, ${sarite} sarite`);
+                          Alert.alert(tr.settings.importComplet, `${importate} ${tr.settings.importate}, ${sarite} ${tr.settings.sarite}`);
                       }
                   }
                   router.back();
               }}>
-                  <Text style={[styles.label, { fontFamily: PIXEL }]}>Importa date</Text>
+                  <Text style={[styles.label, { fontFamily: PIXEL }]}>{tr.settings.importa}</Text>
                   <IconSymbol size={16} name="square.and.arrow.down" color={'#111'} />
               </TouchableOpacity>
+            </View>
+          </View>
+          <View style={{marginTop: 35}}>
+            <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>
+              {tr.settings.limba}
+            </Text>
+            <View style={[styles.formCard, { zIndex: 1000 }]}>
+                <DropDownPicker
+                    open={open}
+                    value={langValue}
+                    items={langItems}
+                    setOpen={setOpen}
+                    setValue={(callback) => {
+                        const newLang = (typeof callback === 'function' 
+                            ? callback(langValue) 
+                            : callback) as 'ro' | 'en';
+                        console.log('newLang:', newLang);
+                        setLangValue(newLang);
+                        setLang(newLang);
+                        updateSettings({
+                            ...getSettings(),
+                            lang: newLang,
+                        });
+                    }}
+                    placeholder={tr.settings.selecteazaLimba}
+                    listMode="SCROLLVIEW"
+                    style={styles.dropDown}
+                    textStyle={{ fontFamily: PIXEL, fontSize: 10 }}
+                />
             </View>
           </View>
         </ScrollView>
@@ -361,4 +404,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F0F0',
     marginHorizontal: 10,
   },
+  dropDown: {
+    borderColor: '#fff',
+  }
 });

@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { requestPermissions, scheduleAllNotifications, registerBackgroundTask, setupNotificationChannel } from '@/database/notifications';
+import { LangProvider } from '@/i18n/LangContext';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -28,17 +29,19 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="add_birthday" options={{ headerShown: false }} />
-          <Stack.Screen name="info" options={{ headerShown: false }} />
-          <Stack.Screen name="update_birthday" options={{ headerShown: false }} />
-          <Stack.Screen name="settings" options={{ headerShown: false }} />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </GestureHandlerRootView>
+    <LangProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="add_birthday" options={{ headerShown: false }} />
+            <Stack.Screen name="info" options={{ headerShown: false }} />
+            <Stack.Screen name="update_birthday" options={{ headerShown: false }} />
+            <Stack.Screen name="settings" options={{ headerShown: false }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </GestureHandlerRootView>
+    </LangProvider>
   );
 }

@@ -6,6 +6,7 @@ export type Settings = {
     reminderDaysBefore : number;
     reminderHour : number;
     reminderMinutes : number;
+    lang : string;
 };
 
 export function getSettings(): Settings {
@@ -13,8 +14,8 @@ export function getSettings(): Settings {
 }
 
 export function updateSettings(settings: Settings){
-    db.runSync('UPDATE settings SET reminderOnDay = ?, reminderDaysBefore = ?, reminderHour = ?, reminderMinutes = ? WHERE id = 1',
-        settings.reminderOnDay, settings.reminderDaysBefore, settings.reminderHour, settings.reminderMinutes);
+    db.runSync('UPDATE settings SET reminderOnDay = ?, reminderDaysBefore = ?, reminderHour = ?, reminderMinutes = ?, lang = ? WHERE id = 1',
+        settings.reminderOnDay, settings.reminderDaysBefore, settings.reminderHour, settings.reminderMinutes, settings.lang);
 }
 
 export function validateHour(value: string): string {

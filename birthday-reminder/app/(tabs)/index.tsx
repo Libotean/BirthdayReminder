@@ -9,13 +9,14 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import ReanimatedSwipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PixelStars from '@/components/PixelStars';
+import { useLang } from '@/i18n/LangContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function TabOneScreen() {
   const [birthdays, setBirthdays] = useState<Birthday[]>([]);
   const router = useRouter();
-  
+  const { tr } = useLang();
   
   const frames = [
       require('@/assets/cat/F0.png'),
@@ -85,7 +86,7 @@ export default function TabOneScreen() {
 
   if (!fontsLoaded) return null;
 
-  const sections = useMemo(() => groupByMonth(birthdays), [birthdays]);
+  const sections = useMemo(() => groupByMonth(birthdays, tr.index.luni), [birthdays, tr]);
   const PIXEL = 'PressStart2P_400Regular';
 
   return (
@@ -103,15 +104,15 @@ export default function TabOneScreen() {
 
       <View style={styles.header}>
         <View>
-          <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>Zile de</Text>
-          <Text style={[styles.title, { fontFamily: PIXEL }]}>nastere</Text>
+          <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>{tr.index.headerLabel}</Text>
+          <Text style={[styles.title, { fontFamily: PIXEL }]}>{tr.index.title}</Text>
         </View>
       </View>
       
       {birthdays.length > 0 && (
         <View style={styles.countPill}>
           <Text style={[styles.countText, { fontFamily: PIXEL }]}>
-            {birthdays.length} persoane
+            {birthdays.length} {tr.index.persoane}
           </Text>
         </View>
       )}
@@ -138,9 +139,9 @@ export default function TabOneScreen() {
           <View style={styles.emptyContainer}>
             <View style={styles.emptyBox}>
               <Text style={styles.emptyEmoji}>🎂</Text>
-              <Text style={[styles.emptyTitle, { fontFamily: PIXEL }]}>gol aici</Text>
+              <Text style={[styles.emptyTitle, { fontFamily: PIXEL }]}>{tr.index.golAici}</Text>
               <Text style={[styles.emptySubtitle, { fontFamily: PIXEL }]}>
-                apasa + pentru a{'\n'}adauga prima zi
+                {tr.index.apasaPlus}
               </Text>
             </View>
           </View>
@@ -154,7 +155,7 @@ export default function TabOneScreen() {
           </View>
         )}
         renderItem={({ item }) => {
-          const isToday = getDaysUntilNextBirthday(item.birthdate) === 'Azi!';
+          const isToday = getDaysUntilNextBirthday(item.birthdate, tr.index.azi, tr.index.zi, tr.index.zile) === tr.index.azi;
 
           const cardInner = (
             <TouchableOpacity
@@ -180,12 +181,12 @@ export default function TabOneScreen() {
                     {item.name}
                   </Text>
                   {isToday && (
-                    <Text style={[styles.todayLabel, { fontFamily: PIXEL }]}>Implineste {getAge(item.birthdate)} {getAge(item.birthdate) == 1 ? ("an!") : ("ani!")}</Text>
+                    <Text style={[styles.todayLabel, { fontFamily: PIXEL }]}>{tr.index.implineste} {getAge(item.birthdate)} {getAge(item.birthdate) == 1 ? (tr.index.an) : (tr.index.ani)}</Text>
                   )}
                 </View>
                 <View style={[styles.daysBadge, isToday && styles.daysBadgeToday]}>
                   <Text style={[styles.daysText, { fontFamily: PIXEL }, isToday && styles.daysTextToday]}>
-                    {getDaysUntilNextBirthday(item.birthdate)}
+                    {getDaysUntilNextBirthday(item.birthdate, tr.index.azi, tr.index.zi, tr.index.zile)}
                   </Text>
                 </View>
               </View>
@@ -200,12 +201,12 @@ export default function TabOneScreen() {
                   style={styles.deleteButton}
                   onPress={() => {
                     Alert.alert(
-                        'Sterge',
-                        `Esti sigur ca vrei sa stergi pe ${item.name}?`,
+                        tr.index.sterge,
+                        `${tr.index.estiSigur} ${item.name}?`,
                         [
-                            { text: 'Anuleaza', style: 'cancel' },
+                            { text: tr.index.anuleaza, style: 'cancel' },
                             {
-                                text: 'Sterge',
+                                text: tr.index.sterge,
                                 style: 'destructive',
                                 onPress: () => {
                                     remove(item.id!);

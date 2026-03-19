@@ -26,7 +26,9 @@ const MAPPING = {
   'gear': 'settings',
   'phone': 'phone',
   'message': 'message',
-  'person': 'person'
+  'person': 'person',
+  'square.and.arrow.up': 'import-export',
+  'square.and.arrow.down': 'import-contacts'
 } as IconMapping;
 
 /**
