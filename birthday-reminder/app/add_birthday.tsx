@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { Text, View, TouchableOpacity, StyleSheet, TextInput, Image, Dimensions, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, TextInput, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { useFonts } from 'expo-font';
 import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import * as ImagePicker from 'expo-image-picker';
@@ -10,6 +10,7 @@ import DatePickerModal from '@/components/DatePickerModal';
 import { scheduleAllNotifications } from "@/database/notifications"
 import * as Contacts from 'expo-contacts';
 import PixelStars from '@/components/PixelStars';
+import { useLang } from '@/i18n/LangContext';
 
 export default function AddBirthdayScreen() {
     const [name, setName] = useState('');
@@ -21,6 +22,7 @@ export default function AddBirthdayScreen() {
     const [phoneError, setPhoneError] = useState('');
     const [dateError, setDateError] = useState('');
     const [loading, setLoading] = useState(false);
+    const { tr } = useLang();
     const router = useRouter();
 
     const [fontsLoaded] = useFonts({ PressStart2P_400Regular });
@@ -46,7 +48,7 @@ export default function AddBirthdayScreen() {
         const pErr = validatePhone(phone);
         const today = new Date();
         if (data >= today) {
-            setDateError('Data nu poate fi in viitor.');
+            setDateError(tr.addBirthday.dataViitor);
             return;
         } else {
             setDateError('');
@@ -84,8 +86,8 @@ export default function AddBirthdayScreen() {
                 </TouchableOpacity>
 
                 <View style={styles.header}>
-                    <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>Adauga zi de</Text>
-                    <Text style={[styles.title, { fontFamily: PIXEL }]}>nastere</Text>
+                    <Text style={[styles.headerLabel, { fontFamily: PIXEL }]}>{tr.addBirthday.headerLabel}</Text>
+                    <Text style={[styles.title, { fontFamily: PIXEL }]}>{tr.addBirthday.title}</Text>
                 </View>
 
                 <TouchableOpacity onPress={pickImage} style={styles.avatarWrapper}>
@@ -93,14 +95,14 @@ export default function AddBirthdayScreen() {
                         ? <Image source={{ uri: poza }} style={styles.avatar} />
                         : <View style={styles.avatarPlaceholder}>
                             <IconSymbol size={28} name="camera" color={'#AAAAAA'} />
-                            <Text style={[styles.avatarHint, { fontFamily: PIXEL }]}>foto</Text>
+                            <Text style={[styles.avatarHint, { fontFamily: PIXEL }]}>{tr.addBirthday.foto}</Text>
                         </View>
                     }
                 </TouchableOpacity>
 
                 <View style={styles.formCard}>
 
-                    <Text style={[styles.label, { fontFamily: PIXEL }]}>Nume</Text>
+                    <Text style={[styles.label, { fontFamily: PIXEL }]}>{tr.addBirthday.nume}</Text>
                     <TextInput
                         placeholder="Pop Ion"
                         placeholderTextColor="#BBBBBB"
@@ -110,7 +112,7 @@ export default function AddBirthdayScreen() {
                     />
                     {nameError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{nameError}</Text> : null}
 
-                    <Text style={[styles.label, { fontFamily: PIXEL }]}>Telefon</Text>
+                    <Text style={[styles.label, { fontFamily: PIXEL }]}>{tr.addBirthday.telefon}</Text>
                     <View style={styles.phoneRow}>
                         <TextInput
                             placeholder="07xx xxx xxx"
@@ -126,7 +128,7 @@ export default function AddBirthdayScreen() {
                     </View>
                     {phoneError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{phoneError}</Text> : null}
 
-                    <Text style={[styles.label, { fontFamily: PIXEL }]}>Data nasterii</Text>
+                    <Text style={[styles.label, { fontFamily: PIXEL }]}>{tr.addBirthday.dataNasterii}</Text>
                     <TouchableOpacity onPress={() => setShowPicker(true)}>
                         <View style={[styles.input, styles.dateInput, dateError ? styles.inputError : null]}>
                             <Text style={[styles.dateText, { fontFamily: PIXEL }]}>
@@ -148,7 +150,7 @@ export default function AddBirthdayScreen() {
                 )}
 
                 <TouchableOpacity style={[styles.saveButton, loading && { opacity: 0.6 }]} onPress={async () => {if (loading) return; saveBirthday(); setLoading(true);}}>
-                    <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>{loading ? 'Se salveaza...' : 'Salveaza'}</Text>
+                    <Text style={[styles.saveButtonText, { fontFamily: PIXEL }]}>{loading ? tr.addBirthday.seSalveaza : tr.addBirthday.salveaza}</Text>
                 </TouchableOpacity>
 
             </ScrollView>
@@ -165,7 +167,7 @@ const styles = StyleSheet.create({
     btnLeft: {
         position: 'absolute',
         left: 20,
-        top: '12%',
+        top: '9%',
         width: 42,
         height: 42,
         borderRadius: 14,

@@ -46,8 +46,10 @@ export default {
     },
     info: {
         ani: 'years',
+        an: 'year',
         ramase: 'remaining',
         laMultiAni: 'Happy Birthday!',
+        azi: 'Today!',
     },
     settings: {
         title: 'Settings',
@@ -78,5 +80,6 @@ export default {
         aziEZiua: "Today",
         reminder: '🎂 Reminder!',
         inZile: "days until",
+        zileNastere: 'Birthdays',
     },
 };

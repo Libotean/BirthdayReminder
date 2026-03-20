@@ -1,4 +1,6 @@
 import db from './db';
+import { useLang } from '@/i18n/LangContext';
+const { tr } = useLang();
 
 export type Settings = {
     id? : number;
@@ -20,14 +22,14 @@ export function updateSettings(settings: Settings){
 
 export function validateHour(value: string): string {
     const num = Number(value);
-    if (isNaN(num)) return 'doar numere';
-    if (num < 0 || num > 23) return 'ora: 0-23';
+    if (isNaN(num)) return tr.settings.doarNumere;
+    if (num < 0 || num > 23) return tr.settings.oraInvalida;
     return '';
 }
 
 export function validateMinutes(value: string): string {
     const num = Number(value);
-    if (isNaN(num)) return 'doar numere';
-    if (num < 0 || num > 59) return '0-59';
+    if (isNaN(num)) return tr.settings.doarNumere;
+    if (num < 0 || num > 59) return tr.settings.minuteInvalide;
     return '';
 }

@@ -46,8 +46,10 @@ export default {
     },
     info: {
         ani: 'ani',
+        an: 'an',
         ramase: 'ramase',
         laMultiAni: 'La multi ani!',
+        azi: 'Azi!',
     },
     settings: {
         title: 'Setari',
@@ -78,5 +80,6 @@ export default {
         aziEZiua: 'Azi e ziua lui',
         reminder: '🎂 Reminder!',
         inZile: 'zile e ziua lui',
+        zileNastere: 'Zile de nastere',
     },
 };

@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
-import { Text, View, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
-import Svg, { Rect } from 'react-native-svg';
+import { Text, View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFonts } from 'expo-font';
 import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
@@ -10,6 +9,9 @@ import { getAll, Birthday, getInitials, getAge, getDaysUntilNextBirthday } from 
 import { whatsappPerson, callPerson, messagePerson } from '@/database/actions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PixelStars from '@/components/PixelStars';
+import { useLang } from '@/i18n/LangContext';
+
+const { tr } = useLang();
 
 export default function BirthdayInfoScreen() {
     const { id } = useLocalSearchParams();
@@ -27,7 +29,7 @@ export default function BirthdayInfoScreen() {
     if (!fontsLoaded || !person) return null;
 
     const PIXEL = 'PressStart2P_400Regular';
-    const isToday = getDaysUntilNextBirthday(person.birthdate) === 'Azi!';
+    const isToday = getDaysUntilNextBirthday(person.birthdate) === tr.info.azi;
     const daysText = getDaysUntilNextBirthday(person.birthdate);
 
     return (
@@ -96,9 +98,9 @@ export default function BirthdayInfoScreen() {
                         {getAge(person.birthdate)}
                     </Text>
                     {getAge(person.birthdate) == 1? (
-                        <Text style={[styles.statLabel, { fontFamily: PIXEL }]}>an</Text>
+                        <Text style={[styles.statLabel, { fontFamily: PIXEL }]}>{tr.info.an}</Text>
                     ) : (
-                        <Text style={[styles.statLabel, { fontFamily: PIXEL }]}>ani</Text>
+                        <Text style={[styles.statLabel, { fontFamily: PIXEL }]}>{tr.info.ani}</Text>
                     )}
                     
                 </View>
@@ -111,7 +113,7 @@ export default function BirthdayInfoScreen() {
                     >
                         <View style={[styles.statCard, styles.statCardTodayInner]}>
                             <Text style={[styles.statValue, { fontFamily: PIXEL, color: '#fff' }]}>
-                                Azi!
+                                {tr.info.azi}
                             </Text>
                         </View>
                     </LinearGradient>
@@ -121,7 +123,7 @@ export default function BirthdayInfoScreen() {
                             {daysText}
                         </Text>
                         <Text style={[styles.statLabel, { fontFamily: PIXEL, color: '#888' }]}>
-                            ramase
+                            {tr.info.ramase}
                         </Text>
                     </View>
                 )}

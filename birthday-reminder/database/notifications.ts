@@ -4,6 +4,8 @@ import { getSettings } from './settings';
 import * as TaskManager from 'expo-task-manager';
 import * as BackgroundTask from 'expo-background-task';
 import { Platform } from 'react-native';
+import { useLang } from '@/i18n/LangContext';
+const { tr } = useLang();
 
 const TASK_NAME = 'reschedule-notifications';
 
@@ -64,8 +66,8 @@ export async function scheduleAllNotifications() {
                 if (trigger > today) {
                     await Notifications.scheduleNotificationAsync({
                         content: {
-                            title: '🎂 La multi ani!',
-                            body: `Azi e ziua lui ${birthday.name}!`,
+                            title: tr.notifications.laMultiAni,
+                            body: `${tr.notifications.aziEZiua} ${birthday.name}!`,
                             priority: 'max',
                         },
                         trigger: {
@@ -90,8 +92,8 @@ export async function scheduleAllNotifications() {
                 if (trigger > today) {
                     await Notifications.scheduleNotificationAsync({
                         content: {
-                            title: '🎂 Reminder!',
-                            body: `In ${settings.reminderDaysBefore} zile e ziua lui ${birthday.name}!`,
+                            title: tr.notifications.reminder,
+                            body: `In ${settings.reminderDaysBefore} ${tr.notifications.inZile} ${birthday.name}!`,
                             priority: 'max',
                         },
                         trigger: {
@@ -109,7 +111,7 @@ export async function scheduleAllNotifications() {
 export async function setupNotificationChannel() {
     if (Platform.OS === 'android') {
         await Notifications.setNotificationChannelAsync('birthdays', {
-            name: 'Zile de nastere',
+            name: tr.notifications.zileNastere,
             importance: Notifications.AndroidImportance.MAX,
             vibrationPattern: [0, 250, 250, 250],
             lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
