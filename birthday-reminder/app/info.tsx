@@ -11,13 +11,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import PixelStars from '@/components/PixelStars';
 import { useLang } from '@/i18n/LangContext';
 
-const { tr } = useLang();
-
 export default function BirthdayInfoScreen() {
     const { id } = useLocalSearchParams();
     const [person, setPerson] = useState<Birthday | null>(null);
     const router = useRouter();
     const [fontsLoaded] = useFonts({ PressStart2P_400Regular });
+    const { tr } = useLang();
 
     useFocusEffect(
         useCallback(() => {
@@ -30,7 +29,7 @@ export default function BirthdayInfoScreen() {
 
     const PIXEL = 'PressStart2P_400Regular';
     const isToday = getDaysUntilNextBirthday(person.birthdate) === tr.info.azi;
-    const daysText = getDaysUntilNextBirthday(person.birthdate);
+    const daysText = getDaysUntilNextBirthday(person.birthdate, tr.index.azi, tr.index.zi, tr.index.zile)
 
     return (
         <SafeAreaView style={styles.container}>

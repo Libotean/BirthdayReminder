@@ -45,8 +45,8 @@ export default {
         telefonInvalid: 'Invalid format. Ex: 07xx xxx xxx',
     },
     info: {
-        ani: 'years',
-        an: 'year',
+        ani: 'years old',
+        an: 'year oldx',
         ramase: 'remaining',
         laMultiAni: 'Happy Birthday!',
         azi: 'Today!',

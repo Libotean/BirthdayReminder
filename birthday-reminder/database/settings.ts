@@ -1,7 +1,4 @@
 import db from './db';
-import { useLang } from '@/i18n/LangContext';
-const { tr } = useLang();
-
 export type Settings = {
     id? : number;
     reminderOnDay : number;
@@ -20,16 +17,16 @@ export function updateSettings(settings: Settings){
         settings.reminderOnDay, settings.reminderDaysBefore, settings.reminderHour, settings.reminderMinutes, settings.lang);
 }
 
-export function validateHour(value: string): string {
+export function validateHour(value: string, errNaN: string, errRange: string): string {
     const num = Number(value);
-    if (isNaN(num)) return tr.settings.doarNumere;
-    if (num < 0 || num > 23) return tr.settings.oraInvalida;
+    if (isNaN(num)) return errNaN;
+    if (num < 0 || num > 23) return errRange;
     return '';
 }
 
-export function validateMinutes(value: string): string {
+export function validateMinutes(value: string, errNaN: string, errRange: string): string {
     const num = Number(value);
-    if (isNaN(num)) return tr.settings.doarNumere;
-    if (num < 0 || num > 59) return tr.settings.minuteInvalide;
+    if (isNaN(num)) return errNaN;
+    if (num < 0 || num > 59) return errRange;
     return '';
 }

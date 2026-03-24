@@ -65,8 +65,8 @@ export default function SettingsScreen() {
   );
 
   const saveSettings = () => {
-    const hErr = validateHour(String(reminderHour));
-    const mErr = validateMinutes(String(reminderMinutes));
+    const hErr = validateHour(String(reminderHour), tr.settings.doarNumere, tr.settings.oraInvalida);
+    const mErr = validateMinutes(String(reminderMinutes), tr.settings.doarNumere, tr.settings.minuteInvalide);
     if (hErr || mErr) return;
 
     updateSettings({
@@ -166,7 +166,7 @@ export default function SettingsScreen() {
                     value={String(reminderHour)}
                     onChangeText={(v) => {
                       setReminderHour(Number(v));
-                      setHourError(validateHour(v));
+                      setHourError(validateHour(v, tr.settings.doarNumere, tr.settings.oraInvalida));
                     }}
                     keyboardType="numeric"
                     maxLength={2}
@@ -179,7 +179,7 @@ export default function SettingsScreen() {
                     value={String(reminderMinutes)}
                     onChangeText={(v) => {
                       setReminderMinutes(Number(v));
-                      setMinutesError(validateMinutes(v));
+                      setMinutesError(validateMinutes(v, tr.settings.doarNumere, tr.settings.minuteInvalide));
                     }}
                     keyboardType="numeric"
                     maxLength={2}

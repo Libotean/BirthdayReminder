@@ -56,8 +56,8 @@ export default function EditBirthdayScreen() {
     };    
 
     const saveBirthday = useCallback(() => {
-        const nErr = validateName(name);
-        const pErr = validatePhone(phone);
+        const nErr = validateName(name, tr.addBirthday.numeObligatoriu);
+        const pErr = validatePhone(phone, tr.addBirthday.telefonInvalid);
         const today = new Date();
         if (data >= today) {
             setDateError(tr.updateBirthday.dataViitor);
@@ -124,7 +124,7 @@ export default function EditBirthdayScreen() {
                         placeholder="Pop Ion"
                         placeholderTextColor="#BBBBBB"
                         value={name}
-                        onChangeText={(v) => { setName(v); setNameError(validateName(v)); }}
+                        onChangeText={(v) => { setName(v); setNameError(validateName(v, tr.addBirthday.numeObligatoriu)); }}
                         style={[styles.input, nameError ? styles.inputError : null, { fontFamily: PIXEL }]}
                     />
                     {nameError ? <Text style={[styles.errorText, { fontFamily: PIXEL }]}>{nameError}</Text> : null}
@@ -135,7 +135,7 @@ export default function EditBirthdayScreen() {
                             placeholder="07xx xxx xxx"
                             placeholderTextColor="#BBBBBB"
                             value={phone}
-                            onChangeText={(v) => { setPhone(v); setPhoneError(validatePhone(v)); }}
+                            onChangeText={(v) => { setPhone(v); setPhoneError(validatePhone(v, tr.addBirthday.telefonInvalid)); }}
                             keyboardType="phone-pad"
                             style={[styles.phoneInput, phoneError ? styles.inputError : null, { fontFamily: PIXEL }]}
                         />

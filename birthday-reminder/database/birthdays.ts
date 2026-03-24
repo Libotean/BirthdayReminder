@@ -1,6 +1,4 @@
 import db from './db';
-import { useLang } from '@/i18n/LangContext';
-const { tr } = useLang();
 
 export type Birthday = {
     id? : number;
@@ -72,17 +70,15 @@ export function groupByMonth(birthdays: Birthday[], luni: string[]) {
     }));
 }
 
-export function validateName(value: string): string {
-    // const NAME_REGEX = /^[a-zA-ZăâîșțĂÂÎȘȚ\s\-]+$/;
-    if (!value.trim()) return tr.addBirthday.numeObligatoriu;
-    // if (!NAME_REGEX.test(value.trim())) return 'Doar litere, spatii si cratime.';
+export function validateName(value: string, errObligatoriu: string = 'Numele este obligatoriu.'): string {
+    if (!value.trim()) return errObligatoriu;
     return '';
 };
 
-export function validatePhone(value: string): string {
+export function validatePhone(value: string, errInvalid: string = 'Format invalid. Ex: 07xx xxx xxx'): string {
     if (!value.trim()) return '';
     const PHONE_REGEX = /^07\d{2}\s?\d{3}\s?\d{3}$/;
-    if (!PHONE_REGEX.test(value.trim())) return tr.addBirthday.telefonInvalid;
+    if (!PHONE_REGEX.test(value.trim())) return errInvalid;
     return '';
 };
 
