@@ -1,3 +1,4 @@
+import * as FileSystem from 'expo-file-system/legacy';
 import db from './db';
 
 export type Birthday = {
@@ -104,4 +105,11 @@ export function exists(name: string, birthdate: string, phone: string): boolean 
         ) as any;
         return result !== null;
     }
+}
+
+// picker URIs live in cache, which Android may clear; keep a permanent copy
+export async function savePhoto(uri: string): Promise<string> {
+    const dest = `${FileSystem.documentDirectory}photo_${Date.now()}.jpg`;
+    await FileSystem.copyAsync({ from: uri, to: dest });
+    return dest;
 }

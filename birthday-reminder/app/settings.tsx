@@ -257,13 +257,13 @@ export default function SettingsScreen() {
                         const newLang = (typeof callback === 'function' 
                             ? callback(langValue) 
                             : callback) as 'ro' | 'en';
-                        console.log('newLang:', newLang);
                         setLangValue(newLang);
                         setLang(newLang);
                         updateSettings({
                             ...getSettings(),
                             lang: newLang,
                         });
+                        scheduleAllNotifications();
                     }}
                     placeholder={tr.settings.selecteazaLimba}
                     listMode="SCROLLVIEW"

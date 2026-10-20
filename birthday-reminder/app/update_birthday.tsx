@@ -4,7 +4,7 @@ import { Text, View, TouchableOpacity, StyleSheet, TextInput, Image, KeyboardAvo
 import { useFonts } from 'expo-font';
 import { PressStart2P_400Regular } from '@expo-google-fonts/press-start-2p';
 import * as ImagePicker from 'expo-image-picker';
-import { update, getAll, validateName, validatePhone, formatPhone } from '@/database/birthdays';
+import { update, savePhoto, getAll, validateName, validatePhone, formatPhone } from '@/database/birthdays';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import DatePickerModal from '@/components/DatePickerModal';
 import { scheduleAllNotifications } from "@/database/notifications"
@@ -82,7 +82,7 @@ export default function EditBirthdayScreen() {
             allowsEditing: true,
             aspect: [1, 1],
         });
-        if (!result.canceled) setPoza(result.assets[0].uri);
+        if (!result.canceled) setPoza(await savePhoto(result.assets[0].uri));
     };
 
     return (
